@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    background: linear-gradient(135deg, #CF9FFF, #B87FFF);
+    @apply hover:shadow-lg text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-md;
+  }
+  
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #B87FFF, #A66FFF);
+    @apply shadow-xl;
+  }
+  
+  .btn-secondary {
+    @apply bg-white border-2 px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105;
+    color: #CF9FFF;
+    border-color: #CF9FFF;
+  }
+  
+  .btn-secondary:hover {
+    background-color: #F8F4FF;
+    border-color: #B87FFF;
+  }
+  
+  .card-hover {
+    @apply transition-all duration-300 transform hover:scale-105 hover:shadow-xl;
+  }
+  
+  .gradient-text {
+    background: linear-gradient(135deg, #CF9FFF, #B87FFF, #9F5FFF);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% 200%;
+    animation: gradientShift 3s ease infinite;
+  }
+  
+  .logo-circle {
+    background: linear-gradient(135deg, #ffffff, #f8f4ff);
+    box-shadow: 0 8px 32px rgba(207, 159, 255, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .logo-circle:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 12px 40px rgba(207, 159, 255, 0.4);
+  }
+  
+  .logo-float {
+    animation: float 3s ease-in-out infinite;
+  }
+}
+
+.hero-video {
+  border-radius: 20px;
+  box-shadow: 0 25px 50px rgba(207, 159, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.hero-video:hover {
+  transform: scale(1.02);
+  box-shadow: 0 30px 60px rgba(207, 159, 255, 0.4);
+}
+
+.food-card {
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  border: 1px solid rgba(207, 159, 255, 0.2);
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(100px) scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.order-popup {
+  animation: slideInUp 0.6s ease-out;
+}
+
+.order-popup:hover {
+  animation: slideInUp 0.6s ease-out, pulse 2s infinite;
+}

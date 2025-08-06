@@ -1,0 +1,35 @@
+# Node.js / Next.js / React / TypeScript / macOS
+# General
+.DS_Store
+.env*
+*.local
+*.log
+
+# Node
+node_modules/
+
+# Build output
+.next/
+out/
+dist/
+
+# TypeScript
+*.tsbuildinfo
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+
+# pnpm
+pnpm-lock.yaml
+
+# Misc
+coverage/
+
+# Ignore public xyz folder if needed
+public/xyz/
