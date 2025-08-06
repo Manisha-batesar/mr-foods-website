@@ -1,40 +1,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { ShoppingCart, Snowflake } from 'lucide-react'
+import { ALL_FOOD_ITEMS } from '../../lib/foodData'
 
-const drinks = [
-  // Soft Drinks
-  { id: 1, name: 'Coca Cola', price: 49, category: 'Soft Drinks', image: "/images/cocacola.jpg" },
-  { id: 2, name: 'Pepsi', price: 49, category: 'Soft Drinks', image: '/images/pepsi.jpg' },
-  { id: 3, name: 'Sprite', price: 49, category: 'Soft Drinks', image: '/images/sprite.jpg' },
-  { id: 4, name: 'Fanta Orange', price: 49, category: 'Soft Drinks', image: '/images/fenta.jpg' },
-  { id: 5, name: 'Mountain Dew', price: 49, category: 'Soft Drinks', image:'/images/mountaindew.jpg' },
-  { id: 6, name: 'Thumbs Up', price: 49, category: 'Soft Drinks', image:'/images/thumsup.jpg'},
-  
-  // Coffee
-  { id: 7, name: 'Cappuccino', price: 89, category: 'Coffee', image: '/images/cappuccino.jpg' },
-  { id: 8, name: 'Latte', price: 99, category: 'Coffee', image: '/images/latte.jpg' },
-  { id: 9, name: 'Espresso', price: 79, category: 'Coffee', image:'/images/espresso.jpg' },
-  { id: 10, name: 'Americano', price: 89, category: 'Coffee', image: '/images/americano.jpg' },
-  { id: 11, name: 'Iced Coffee', price: 109, category: 'Coffee', image: '/images/iced Coffee.jpg' },
-  { id: 12, name: 'Cold Brew', price: 119, category: 'Coffee', image: '/images/Cold Brew.jpg' },
-  
-  // Mojitos
-  { id: 13, name: 'Classic Mojito', price: 129, category: 'Mojitos', image: '/images/classic mojito.jpg?height=200&width=200' },
-  { id: 14, name: 'Strawberry Mojito', price: 149, category: 'Mojitos', image:  '/images/Strawberry Mojito.jpg?height=200&width=200' },
-  { id: 15, name: 'Mango Mojito', price: 149, category: 'Mojitos', image:  '/images/Mango Mojito.jpg?height=200&width=200' },
-  { id: 16, name: 'Blue Curacao Mojito', price: 159, category: 'Mojitos', image:  '/images/Blue Curacao Mojito.jpg?height=200&width=200' },
-  { id: 17, name: 'Virgin Mojito', price: 119, category: 'Mojitos', image:  '/images/Virgin Mojito.jpg?height=200&width=200' },
-  
-  // Additional Drinks
-  { id: 18, name: 'Fresh Lime Soda', price: 69, category: 'Fresh Drinks', image:  '/images/Fresh Lime Soda.jpg?height=200&width=200' },
-  { id: 19, name: 'Mango Lassi', price: 89, category: 'Fresh Drinks', image: '/images/Mango Lassi.jpg?height=200&width=200' },
-  { id: 20, name: 'Iced Tea', price: 79, category: 'Fresh Drinks', image:  '/images/Iced Tea.jpg?height=200&width=200' },
-]
+const drinks = ALL_FOOD_ITEMS.filter(item => item.category === 'Cold Drinks')
+const categories = [...new Set(drinks.map(drink => drink.category))]
 
 export default function ColdDrinksPage() {
-  const categories = [...new Set(drinks.map(drink => drink.category))]
-
   return (
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
@@ -86,7 +58,7 @@ export default function ColdDrinksPage() {
                         ₹{drink.price}
                       </div>
                       <Link 
-                        href="/order-now"
+                        href={`/order-now?dishId=${drink.id}`}
                         className="text-white px-3 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center space-x-1 text-sm"
                         style={{ background: 'linear-gradient(135deg, #CF9FFF, #B87FFF)' }}
                       >

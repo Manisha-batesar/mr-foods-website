@@ -26,7 +26,7 @@ export default function MenuPage() {
 
         {/* Category Buttons */}
         <div className="flex flex-wrap justify-center gap-4 mb-12">
-          {categories.map((category) => (
+          {categories.filter((cat) => !cat.hideOnMenupage).map((category) => (
             <button
               key={category.id}
               onClick={() => setSelectedCategory(category)}

@@ -51,6 +51,34 @@ export const FOOD_CATEGORIES = [
       { id: 23, name: 'Rajasthani Thali', price: 299, image: '/images/rajasthani-thali.png' },
       { id: 24, name: 'Pyaaz Kachori', price: 89, image: '/images/pyaaz-kachori.png' },
     ]
+  },
+  {
+    id: 'cold-drinks',
+    name: 'Cold Drinks',
+    title: 'Our Special Cold Drinks',
+    hideOnMenupage: true,
+    items: [
+      { id: 25, name: 'Coca Cola', price: 49, image: '/images/cocacola.jpg' },
+      { id: 26, name: 'Pepsi', price: 49, image: '/images/pepsi.jpg' },
+      { id: 27, name: 'Sprite', price: 49, image: '/images/sprite.jpg' },
+      { id: 28, name: 'Fanta Orange', price: 49, image: '/images/fenta.jpg' },
+      { id: 29, name: 'Mountain Dew', price: 49, image: '/images/mountaindew.jpg' },
+      { id: 30, name: 'Thumbs Up', price: 49, image: '/images/thumsup.jpg' },
+      { id: 31, name: 'Cappuccino', price: 89, image: '/images/cappuccino.jpg' },
+      { id: 32, name: 'Latte', price: 99, image: '/images/latte.jpg' },
+      { id: 33, name: 'Espresso', price: 79, image: '/images/espresso.jpg' },
+      { id: 34, name: 'Americano', price: 89, image: '/images/Americano.jpg' },
+      { id: 35, name: 'Iced Coffee', price: 109, image: '/images/Iced Coffee.jpg' },
+      { id: 36, name: 'Cold Brew', price: 119, image: '/images/Cold Brew.jpg' },
+      { id: 37, name: 'Classic Mojito', price: 129, image: '/images/classic mojito.jpg' },
+      { id: 38, name: 'Strawberry Mojito', price: 149, image: '/images/Strawberry Mojito.jpg' },
+      { id: 39, name: 'Mango Mojito', price: 149, image: '/images/Mango Mojito.jpg' },
+      { id: 40, name: 'Blue Curacao Mojito', price: 159, image: '/images/Blue Curacao Mojito.jpg' },
+      { id: 41, name: 'Virgin Mojito', price: 119, image: '/images/Virgin Mojito.jpg' },
+      { id: 42, name: 'Fresh Lime Soda', price: 69, image: '/images/Fresh Lime Soda.jpg' },
+      { id: 43, name: 'Mango Lassi', price: 89, image: '/images/Mango Lassi.jpg' },
+      { id: 44, name: 'Iced Tea', price: 79, image: '/images/Iced Tea.jpg' },
+    ]
   }
 ]
 
