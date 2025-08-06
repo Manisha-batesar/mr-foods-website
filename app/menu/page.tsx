@@ -82,7 +82,7 @@ export default function MenuPage() {
                   ₹{item.price}
                 </div>
                 <Link 
-                  href="/order-now"
+                  href={`/order-now?dishId=${item.id}`}
                   className="text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center space-x-2"
                   style={{ background: 'linear-gradient(135deg, #CF9FFF, #B87FFF)' }}
                 >
