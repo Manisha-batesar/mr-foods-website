@@ -3,9 +3,14 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
-import { Menu, X } from 'lucide-react'
+import { Menu, ShoppingCart, X } from 'lucide-react'
+import { useCart } from './cart-context'
+import { Button } from './ui/button'
+import { Badge } from './ui/badge'
 
 export default function Header() {
+    const { state, toggleCart } = useCart()
+  const itemCount = state.items.reduce((total, item) => total + item.quantity, 0)
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
@@ -61,14 +66,15 @@ export default function Header() {
                 }}
                 onMouseEnter={(e) => {
                   if (!isActive(link.href)) {
-                    e.target.style.color = '#CF9FFF';
-                    e.target.style.borderColor = '#CF9FFF';
+                    (e.target as HTMLElement).style.color = '#CF9FFF';
+                    (e.target as HTMLElement).style.borderColor = '#CF9FFF';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!isActive(link.href)) {
-                    e.target.style.color = '#374151';
-                    e.target.style.borderColor = 'transparent';
+                    const target = e.target as HTMLElement;
+                    target.style.color = '#374151';
+                    target.style.borderColor = 'transparent';
                   }
                 }}
               >
@@ -76,6 +82,23 @@ export default function Header() {
               </Link>
             ))}
           </nav>
+
+           <Button
+              variant="outline"
+              size="icon"
+              className="relative"
+              onClick={toggleCart}
+            >
+              <ShoppingCart className="h-5 w-5" />
+              {itemCount > 0 && (
+                <Badge 
+                  variant="destructive" 
+                  className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                >
+                  {itemCount}
+                </Badge>
+              )}
+            </Button>
 
           {/* Mobile Menu Button */}
           <button

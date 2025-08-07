@@ -2,7 +2,7 @@ import { Heart, MapPin, Phone, Mail } from 'lucide-react'
 
 export default function Footer() {
   return (
-    <footer style={{ background: 'linear-gradient(135deg, #CF9FFF, #B87FFF)' }} className="text-white">
+    <footer style={{ background: 'linear-gradien``t(135deg, #CF9FFF, #B87FFF)' }} className="text-white">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}

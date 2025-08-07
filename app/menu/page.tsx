@@ -5,12 +5,23 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ShoppingCart } from 'lucide-react'
 import { FOOD_CATEGORIES } from '../../lib/foodData'
+import { Button } from '@/components/ui/button'
+import { useCart } from '@/components/cart-context'
+import { toast } from '@/hooks/use-toast'
 
 const categories = FOOD_CATEGORIES
 
 export default function MenuPage() {
+  const { addItem } = useCart();
   const [selectedCategory, setSelectedCategory] = useState(categories[0])
-
+  const handleAddToCart = (product: any) => {
+    addItem(product)
+    toast({
+      title: "Added to cart!",
+      description: `${product.name} has been added to your cart.`,
+      duration: 2000,
+    })
+  }
   return (
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
@@ -30,17 +41,16 @@ export default function MenuPage() {
             <button
               key={category.id}
               onClick={() => setSelectedCategory(category)}
-              className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 ${
-                selectedCategory.id === category.id
+              className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 ${selectedCategory.id === category.id
                   ? 'text-white shadow-lg'
                   : 'bg-white border-2 hover:bg-opacity-90'
-              }`}
+                }`}
               style={{
-                background: selectedCategory.id === category.id 
-                  ? 'linear-gradient(135deg, #CF9FFF, #B87FFF)' 
+                background: selectedCategory.id === category.id
+                  ? 'linear-gradient(135deg, #CF9FFF, #B87FFF)'
                   : 'white',
-                color: selectedCategory.id === category.id 
-                  ? 'white' 
+                color: selectedCategory.id === category.id
+                  ? 'white'
                   : '#CF9FFF',
                 borderColor: '#CF9FFF'
               }}
@@ -70,18 +80,18 @@ export default function MenuPage() {
                   className="w-full h-48 object-cover rounded-lg"
                 />
                 <div className="absolute top-2 right-2 text-white px-2 py-1 rounded-full text-sm font-semibold"
-                     style={{ backgroundColor: '#CF9FFF' }}>
+                  style={{ backgroundColor: '#CF9FFF' }}>
                   ₹{item.price}
                 </div>
               </div>
-              
+
               <h3 className="text-xl font-bold text-gray-800 mb-2">{item.name}</h3>
-              
+
               <div className="flex items-center justify-between">
                 <div className="text-2xl font-bold" style={{ color: '#CF9FFF' }}>
                   ₹{item.price}
                 </div>
-                <Link 
+                <Link
                   href={`/order-now?dishId=${item.id}`}
                   className="text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center space-x-2"
                   style={{ background: 'linear-gradient(135deg, #CF9FFF, #B87FFF)' }}
@@ -90,6 +100,14 @@ export default function MenuPage() {
                   <span>Order Now</span>
                 </Link>
               </div>
+              <Button
+                variant="default"
+                className="relative"
+                onClick={() => handleAddToCart(item)}
+              >
+                <ShoppingCart className="h-5 w-5" />
+                Add to Cart
+              </Button>
             </div>
           ))}
         </div>
