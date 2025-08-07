@@ -87,27 +87,33 @@ export default function MenuPage() {
 
               <h3 className="text-xl font-bold text-gray-800 mb-2">{item.name}</h3>
 
-              <div className="flex items-center justify-between">
-                <div className="text-2xl font-bold" style={{ color: '#CF9FFF' }}>
-                  ₹{item.price}
-                </div>
-                <Link
-                  href={`/order-now?dishId=${item.id}`}
-                  className="text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center space-x-2"
+              <div className="flex flex-col gap-2 items-end">
+                <div className="flex items-center justify-between w-full">
+                  <div className="text-2xl font-bold" style={{ color: '#CF9FFF' }}>
+                    ₹{item.price}
+                  </div>
+                  <div className='flex gap-3 flex-col'>
+                  <Link
+                    href={`/order-now?dishId=${item.id}`}
+                    className="text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center space-x-2"
+                    style={{ background: 'linear-gradient(135deg, #CF9FFF, #B87FFF)' }}
+                  >
+                    <ShoppingCart size={16} />
+                    <span>Order Now</span>
+                  </Link>
+                   <Button
+                  variant="default"
+                  className="text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center space-x-2 w-full"
                   style={{ background: 'linear-gradient(135deg, #CF9FFF, #B87FFF)' }}
+                  onClick={() => handleAddToCart(item)}
                 >
-                  <ShoppingCart size={16} />
-                  <span>Order Now</span>
-                </Link>
+                  <ShoppingCart className="h-5 w-5" />
+                  Add to Cart
+                </Button>
+                </div>
+                </div>
+               
               </div>
-              <Button
-                variant="default"
-                className="relative"
-                onClick={() => handleAddToCart(item)}
-              >
-                <ShoppingCart className="h-5 w-5" />
-                Add to Cart
-              </Button>
             </div>
           ))}
         </div>
