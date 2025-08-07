@@ -15,10 +15,10 @@ export default function HomePage() {
               muted
               loop
               playsInline
-              poster="/delicious-food-montage.png"
+              poster="/"
             >
-              <source src="/food-preparation-video.mp4" type="video/mp4" />
-              <source src="/food-preparation-video.webm" type="video/webm" />
+              <source src="/images/hero-video.mp4" type="video/mp4" />
+              <source src="/images/hero-video.webm" type="video/webm" />
               {/* Fallback image */}
               <img 
                 src="/delicious-food-montage.png" 
@@ -26,22 +26,15 @@ export default function HomePage() {
                 className="w-full h-[400px] object-cover hero-video"
               />
             </video>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent hero-video flex items-end">
-              <div className="p-6 text-white">
-                <div className="flex items-center space-x-3 bg-black/60 px-4 py-2 rounded-full backdrop-blur-sm">
-                  <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium">Live Kitchen</span>
-                </div>
-              </div>
-            </div>
+            
           </div>
 
           {/* Right Side - Content */}
           <div className="space-y-6">
             <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
               <div className="flex items-center mb-4">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-white to-purple-50 shadow-xl flex items-center justify-center border-3 border-purple-200 mr-4 logo-float">
-                  <div className="text-xl font-black gradient-text">MR</div>
+                <div className="rounded-full bg-gradient-to-br from-white to-purple-50 shadow-xl flex items-center justify-center border-3 border-purple-200 mr-4 logo-float">
+                  <img src="/images/MR-logo.png" className = "rounded-full w-14 h-14 " alt="" />
                 </div>
                 <div className="flex flex-col">
                   <span className="gradient-text text-3xl font-black tracking-tight">𝗠𝗥 Foods</span>

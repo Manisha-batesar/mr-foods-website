@@ -8,8 +8,8 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-3 mb-4">
-              <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/30">
-                <div className="text-2xl font-black text-white">MR</div>
+              <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/30">
+                  <img src="/images/MR-logo.png" className = "rounded-full" alt="" />
               </div>
               <div className="flex flex-col">
                 <h3 className="text-3xl font-black mb-1">𝗠𝗥 Foods</h3>
@@ -61,7 +61,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-white border-opacity-30 mt-8 pt-8 text-center text-white opacity-90">
-          <p>&copy; {new Date().getFullYear()} MR Foods. All rights reserved. | Delivering happiness, one meal at a time.</p>
+          <p>&copy; {new Date().getFullYear()} ❤️ MR (Manisha) Foods. All rights reserved. | Delivering happiness, one meal at a time.</p>
         </div>
       </div>
     </footer>

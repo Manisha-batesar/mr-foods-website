@@ -55,7 +55,7 @@ export default function OrderNowPage() {
         setCustomerName('')
         setNumberOfPlates(1)
         setSelectedItems({})
-      }, 3000)
+      }, 18000)
     }
   }
 
@@ -231,7 +231,7 @@ export default function OrderNowPage() {
                  style={{ borderColor: '#CF9FFF' }}>
               <div className="text-center">
                 {/* Cute animated checkmark */}
-                <div className="bg-gradient-to-r from-green-400 to-green-500 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6 animate-bounce">
+                <div className="bg-gradient-to-r from-green-400 to-green-500 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6 animate-accordion-up">
                   <CheckCircle className="text-white" size={48} />
                 </div>
                 
