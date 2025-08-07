@@ -1,12 +1,29 @@
+"use client"
 import Image from 'next/image'
 import Link from 'next/link'
 import { ShoppingCart, Snowflake } from 'lucide-react'
 import { ALL_FOOD_ITEMS } from '../../lib/foodData'
+import { Button } from '@/components/ui/button'
+import { useCart } from '@/components/cart-context'
+import { toast } from '@/hooks/use-toast'
+import React, { useState } from 'react'
 
 const drinks = ALL_FOOD_ITEMS.filter(item => item.category === 'Cold Drinks')
+// const categories = [...new Set(drinks.map(drink => drink.category))]
+
 const categories = [...new Set(drinks.map(drink => drink.category))]
 
-export default function ColdDrinksPage() {
+export default function MenuPage() {
+  const { addItem } = useCart();
+  const [selectedCategory, setSelectedCategory] = useState(categories[0])
+  const handleAddToCart = (product: any) => {
+    addItem(product)
+    toast({
+      title: "Added to cart!",
+      description: `${product.name} has been added to your cart.`,
+      duration: 2000,
+    })
+  }
   return (
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
@@ -33,7 +50,7 @@ export default function ColdDrinksPage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {drinks
-                .filter(drink => drink.category === category)
+                .filter((drink: any) => drink.category === category)
                 .map((drink) => (
                   <div key={drink.id} className="food-card rounded-xl p-6 card-hover">
                     <div className="relative mb-4">
@@ -44,7 +61,7 @@ export default function ColdDrinksPage() {
                         height={200}
                         className="w-full h-40 object-cover rounded-lg"
                       />
-                      <div className="absolute top-2 right-2 bg-blue-500 text-white px-2 py-1 rounded-full text-sm font-semibold">
+                      <div className="absolute top-2 right-2 bg-[#CF9FFF] text-white px-2 py-1 rounded-full text-sm font-semibold">
                         ₹{drink.price}
                       </div>
                     </div>
@@ -56,7 +73,9 @@ export default function ColdDrinksPage() {
                     <div className="flex items-center justify-between">
                       <div className="text-xl font-bold" style={{ color: '#CF9FFF' }}>
                         ₹{drink.price}
+                         
                       </div>
+                      <div className='flex gap-2 flex-col'>
                       <Link 
                         href={`/order-now?dishId=${drink.id}`}
                         className="text-white px-3 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center space-x-1 text-sm"
@@ -65,6 +84,16 @@ export default function ColdDrinksPage() {
                         <ShoppingCart size={14} />
                         <span>Order</span>
                       </Link>
+                      <Button
+                  variant="default"
+                  className="text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center space-x-2 w-full"
+                  style={{ background: 'linear-gradient(135deg, #CF9FFF, #B87FFF)' }}
+                  onClick={() => handleAddToCart(drink)}
+                >
+                  <ShoppingCart className="h-5 w-5" />
+                  Add to Cart
+                </Button>
+                </div>
                     </div>
                   </div>
                 ))}

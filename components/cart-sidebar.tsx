@@ -87,7 +87,7 @@ export function CartSidebar() {
                         <Button
                           variant="outline"
                           size="icon"
-                          className="h-8 w-8"
+                          className="h-8 w-8 hover:bg-[#dc262660]"
                           onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
                         >
                           <Minus className="h-3 w-3" />
@@ -100,7 +100,7 @@ export function CartSidebar() {
                         <Button
                           variant="outline"
                           size="icon"
-                          className="h-8 w-8"
+                          className="h-8 w-8 hover:bg-[#53af4c6a] "
                           onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
                         >
                           <Plus className="h-3 w-3" />
@@ -109,7 +109,7 @@ export function CartSidebar() {
                         <Button
                           variant="outline"
                           size="icon"
-                          className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          className="h-8 w-8 text-red-600 hover:text-[#dc2626e3] hover:bg-[#dc262660] "
                           onClick={() => removeItem(item.id)}
                         >
                           <Trash2 className="h-3 w-3" />
@@ -133,7 +133,7 @@ export function CartSidebar() {
                 <div className="space-y-2">
                   <Button 
                     onClick={handleCheckout}
-                    className="w-full bg-[#CF9FFF] hover:bg-[#9163be]"
+                    className=" w-full bg-[#CF9FFF] hover:bg-[#9163be]"
                     size="lg"
                   >
                     Checkout
