@@ -53,7 +53,7 @@ export function CartSidebar() {
                 </p>
                 <Button 
                   onClick={() => setCartOpen(false)}
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  className="bg-[#CF9FFF]  hover:bg-[#9163be]"
                 >
                   Order Now
                 </Button>
@@ -133,7 +133,7 @@ export function CartSidebar() {
                 <div className="space-y-2">
                   <Button 
                     onClick={handleCheckout}
-                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                    className="w-full bg-[#CF9FFF] hover:bg-[#9163be]"
                     size="lg"
                   >
                     Checkout
@@ -142,7 +142,7 @@ export function CartSidebar() {
                   <Button 
                     variant="outline" 
                     onClick={clearCart}
-                    className="w-full"
+                    className="w-full bg-[#CF9FFF]  hover:bg-[#9163be]"
                   >
                     Clear Cart
                   </Button>

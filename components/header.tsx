@@ -86,7 +86,7 @@ export default function Header() {
            <Button
               variant="outline"
               size="icon"
-              className="relative"
+              className="relative hover:bg-[#CF9FFF]"
               onClick={toggleCart}
             >
               <ShoppingCart className="h-5 w-5" />
