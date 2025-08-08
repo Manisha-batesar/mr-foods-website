@@ -61,6 +61,7 @@ export default function MenuPage() {
                         height={200}
                         className="w-full h-48 object-cover rounded-lg"
                         loading="eager"
+                        unoptimized
                       />
                       <div className="absolute top-2 right-2 bg-[#CF9FFF] text-white px-2 py-1 rounded-full text-sm font-semibold">
                         ₹{drink.price}

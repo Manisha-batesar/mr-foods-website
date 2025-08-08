@@ -131,6 +131,7 @@
   
   .card-hover {
     @apply transition-all duration-300 transform hover:scale-105 hover:shadow-xl;
+    will-change: transform;
   }
   
   .gradient-text {
