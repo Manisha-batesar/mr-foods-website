@@ -26,12 +26,8 @@ export function CartSidebar() {
   }
 
   const handleConfirmOrder = () => {
-    // Convert cart items to query parameters and navigate to order page
-    const cartItemIds = state.items.map(item => `cartItem=${encodeURIComponent(item.id)}`).join('&')
-    const quantities = state.items.map(item => `quantity=${item.quantity}`).join('&')
-    
     setCartOpen(false)
-    router.push(`/order-now?fromCart=true&${cartItemIds}&${quantities}`)
+    router.push(`/order-now`)
   }
 
   return (

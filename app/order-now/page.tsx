@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Check, ShoppingCart, User, Hash, CheckCircle, X } from 'lucide-react'
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { ALL_FOOD_ITEMS } from '../../lib/foodData'
 import { useCart } from '@/components/cart-context'
 
@@ -10,77 +10,26 @@ import { useCart } from '@/components/cart-context'
 const allItems = ALL_FOOD_ITEMS
 
 export default function OrderNowPage() {
-  const searchParams = useSearchParams();
   const router = useRouter();
   const { state: cartState } = useCart();
-  const dishIdParam = searchParams.get('dishId');
-  const fromCart = searchParams.get('fromCart') === 'true';
-  const cartItemIds = searchParams.getAll('cartItem');
-  const quantities = searchParams.getAll('quantity');
-
+  
   const [customerName, setCustomerName] = useState('')
   const [numberOfPlates, setNumberOfPlates] = useState(1)
   const [selectedItems, setSelectedItems] = useState<{[key: number]: boolean}>({})
   const [totalBill, setTotalBill] = useState(0)
   const [showConfirmation, setShowConfirmation] = useState(false)
 
-  // Pre-select dish if dishId is present in query params
+  // Initialize selected items and total from cart
   useEffect(() => {
-    if (dishIdParam) {
-      const dishId = parseInt(dishIdParam);
-      if (!isNaN(dishId)) {
-        setSelectedItems(prev => ({ ...prev, [dishId]: true }));
-      }
-    }
-  }, [dishIdParam])
-
-  // Pre-select items from cart if coming from cart
-  useEffect(() => {
-    if (fromCart && cartItemIds.length > 0) {
+    if (cartState.items.length > 0) {
       const cartSelections: {[key: number]: boolean} = {};
-      cartItemIds.forEach(itemId => {
-        const numericId = parseInt(itemId);
-        if (!isNaN(numericId)) {
-          cartSelections[numericId] = true;
-        }
+      cartState.items.forEach(item => {
+        cartSelections[parseInt(item.id)] = true;
       });
       setSelectedItems(cartSelections);
-      
-      // Set default customer name when coming from cart (user can change it)
-      if (!customerName) {
-        setCustomerName('');
-      }
-      
-      // Set plates to 1 when coming from cart (cart quantities are handled separately)
-      setNumberOfPlates(1);
-      
-      // Calculate total from cart items with their quantities
-      let cartTotal = 0;
-      cartItemIds.forEach((itemId, index) => {
-        const numericId = parseInt(itemId);
-        const quantity = quantities[index] ? parseInt(quantities[index]) : 1;
-        const item = allItems.find(item => item.id === numericId);
-        if (item) {
-          cartTotal += item.price * quantity;
-        }
-      });
-      setTotalBill(cartTotal);
+      setTotalBill(cartState.total);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run once on mount
-
-  // Calculate total bill whenever selected items change (but not in cart mode)
-  useEffect(() => {
-    if (!fromCart) {
-      const total = Object.keys(selectedItems)
-        .filter(itemId => selectedItems[parseInt(itemId)])
-        .reduce((sum, itemId) => {
-          const item = allItems.find(item => item.id === parseInt(itemId))
-          return sum + (item ? item.price : 0)
-        }, 0)
-      setTotalBill(total * numberOfPlates)
-    }
-  }, [selectedItems, numberOfPlates, fromCart])
+  }, [cartState.items, cartState.total]);
 
   const handleItemToggle = (itemId: number) => {
     setSelectedItems(prev => ({
@@ -90,30 +39,26 @@ export default function OrderNowPage() {
   }
 
   const handleConfirmOrder = () => {
-    // Always require customer name, even when coming from cart
-    const hasValidData = customerName.trim() && (fromCart || Object.values(selectedItems).some(selected => selected));
-    
+    console.log('here');
+    const hasValidData = customerName.trim() && Object.values(selectedItems).some(selected => selected);
+    console.log(hasValidData);
     if (hasValidData) {
       setShowConfirmation(true)
       // Reset form after 15 seconds
       setTimeout(() => {
         setShowConfirmation(false)
-        if (!fromCart) {
-          setCustomerName('')
-          setNumberOfPlates(1)
-          setSelectedItems({})
-        }
+        setCustomerName('')
+        setNumberOfPlates(1)
+        setSelectedItems({})
       }, 15000)
     }
   }
 
   const handleCloseConfirmation = () => {
     setShowConfirmation(false)
-    if (!fromCart) {
-      setCustomerName('')
-      setNumberOfPlates(1)
-      setSelectedItems({})
-    }
+    setCustomerName('')
+    setNumberOfPlates(1)
+    setSelectedItems({})
   }
 
   const categories = [...new Set(allItems.map(item => item.category))]
@@ -126,14 +71,11 @@ export default function OrderNowPage() {
           <div className="flex items-center justify-center mb-4">
             <ShoppingCart style={{ color: '#CF9FFF' }} className="mr-3" size={40} />
             <h1 className="text-4xl lg:text-5xl font-bold gradient-text">
-              {fromCart ? 'Confirm Your Cart Order' : 'Place Your Order'}
+              Confirm Your Cart Order
             </h1>
           </div>
           <p className="text-gray-600 text-lg">
-            {fromCart 
-              ? 'Review your cart items and confirm your order'
-              : 'Fill in your details and select your favorite items'
-            }
+            Review your cart items and confirm your order
           </p>
         </div>
 
@@ -205,11 +147,11 @@ export default function OrderNowPage() {
                     value={numberOfPlates}
                     onChange={(e) => setNumberOfPlates(parseInt(e.target.value) || 1)}
                     className="w-full px-4 py-3 border-2 border-purple-200 rounded-lg focus:border-purple-500 focus:outline-none transition-colors"
-                    disabled={fromCart}
-                    style={fromCart ? { backgroundColor: '#f9fafb', color: '#6b7280' } : {}}
+                    disabled={true}
+                    style={true ? { backgroundColor: '#f9fafb', color: '#6b7280' } : {}}
                   />
                 </div>
-                {fromCart && (
+                {true && (
                   <p className="text-sm text-gray-500 mt-1">Plates calculated based on cart quantities</p>
                 )}
               </div>
@@ -219,7 +161,7 @@ export default function OrderNowPage() {
           {/* Menu Items */}
           <div className="mb-8">
             <h2 className="text-2xl font-bold mb-6" style={{ color: '#CF9FFF' }}>
-              {fromCart ? 'Your Selected Items' : 'Select Items'}
+              Your Selected Items
             </h2>
             
             {categories.map((category) => (
@@ -262,11 +204,11 @@ export default function OrderNowPage() {
                           <span className="font-medium text-gray-800">
                             {item.name}
                           </span>
-                          {fromCart && (
+                          {true && (
                             <span className="ml-2 text-sm text-purple-600 font-semibold">
                               {(() => {
-                                const itemIndex = cartItemIds.findIndex(cartId => parseInt(cartId) === item.id);
-                                const quantity = itemIndex >= 0 ? (quantities[itemIndex] ? parseInt(quantities[itemIndex]) : 1) : 0;
+                                const itemIndex = cartState.items.findIndex(cartItem => parseInt(cartItem.id) === item.id);
+                                const quantity = itemIndex >= 0 ? (cartState.items[itemIndex].quantity ? parseInt(String(cartState.items[itemIndex].quantity)) : 1) : 0;
                                 return quantity > 0 ? `×${quantity}` : '';
                               })()}
                             </span>
@@ -289,37 +231,15 @@ export default function OrderNowPage() {
               <div className="flex justify-between">
                 <span>Number of Plates:</span>
                 <span className="font-semibold">
-                  {fromCart ? (
-                    <span>As per item quantities</span>
-                  ) : (
-                    numberOfPlates
-                  )}
+                  As per item quantities
                 </span>
               </div>
               <div className="flex justify-between">
                 <span>Selected Items:</span>
                 <span className="font-semibold">
-                  {fromCart 
-                    ? cartItemIds.length
-                    : Object.values(selectedItems).filter(Boolean).length
-                  }
+                  {cartState.items.length}
                 </span>
               </div>
-              {fromCart && (
-                <div className="text-sm text-gray-600 mt-2 bg-white rounded-lg p-3">
-                  <div className="font-semibold mb-2">Items from Cart:</div>
-                  {cartItemIds.map((itemId, index) => {
-                    const item = allItems.find(item => item.id === parseInt(itemId));
-                    const quantity = quantities[index] ? parseInt(quantities[index]) : 1;
-                    return item ? (
-                      <div key={itemId} className="flex justify-between py-1">
-                        <span>{item.name}</span>
-                        <span>×{quantity} = ₹{(item.price * quantity)}</span>
-                      </div>
-                    ) : null;
-                  })}
-                </div>
-              )}
               <div className="border-t border-purple-200 pt-2 mt-4">
                 <div className="flex justify-between text-xl font-bold" style={{ color: '#CF9FFF' }}>
                   <span>Total Bill:</span>
@@ -332,14 +252,14 @@ export default function OrderNowPage() {
           {/* Confirm Order Button */}
           <button
             onClick={handleConfirmOrder}
-            disabled={!customerName.trim() || (!fromCart && !Object.values(selectedItems).some(selected => selected))}
+            disabled={!customerName.trim() || !Object.values(selectedItems).some(selected => selected)}
             className={`w-full py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 ${
-              customerName.trim() && (fromCart || Object.values(selectedItems).some(selected => selected))
-                ? 'text-white shadow-lg hover:shadow-xl'
+              customerName.trim() && Object.values(selectedItems).some(selected => selected)
+                ? 'text-white shadow-lg hover:shadow-xl cursor-pointer'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
             style={{
-              background: customerName.trim() && (fromCart || Object.values(selectedItems).some(selected => selected))
+              background: customerName.trim() && Object.values(selectedItems).some(selected => selected)
                 ? 'linear-gradient(135deg, #CF9FFF, #B87FFF)'
                 : undefined
             }}
@@ -395,10 +315,7 @@ export default function OrderNowPage() {
                 <div className="bg-gray-50 rounded-xl p-3 mb-4">
                   <p className="text-gray-600 text-xs mb-1">Order Summary:</p>
                   <p className="text-sm font-bold text-gray-800">
-                    {fromCart 
-                      ? `${cartItemIds.length} items from cart`
-                      : `${Object.values(selectedItems).filter(Boolean).length} items × ${numberOfPlates} plates`
-                    }
+                    {cartState.items.length} items from cart
                   </p>
                   <p className="text-lg font-bold text-purple-600">
                     Total: ₹{totalBill}

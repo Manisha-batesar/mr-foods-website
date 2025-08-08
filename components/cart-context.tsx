@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useReducer, ReactNode } from 'react'
+import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react'
 
 export interface CartItem {
   id: string
@@ -122,12 +122,39 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
 
-export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const [state, dispatch] = useReducer(cartReducer, {
+const loadCartState = (): CartState => {
+  if (typeof window === 'undefined') {
+    return {
+      items: [],
+      isOpen: false,
+      total: 0
+    }
+  }
+  
+  const savedState = localStorage.getItem('cartState')
+  if (savedState) {
+    return JSON.parse(savedState)
+  }
+  
+  return {
     items: [],
     isOpen: false,
     total: 0
-  })
+  }
+}
+
+const saveCartState = (state: CartState) => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('cartState', JSON.stringify(state))
+  }
+}
+
+export const CartProvider = ({ children }: { children: ReactNode }) => {
+  const [state, dispatch] = useReducer(cartReducer, loadCartState())
+
+  useEffect(() => {
+    saveCartState(state)
+  }, [state])
 
   const addItem = (item: Omit<CartItem, 'quantity'>) => {
     dispatch({ type: 'ADD_ITEM', payload: item })
