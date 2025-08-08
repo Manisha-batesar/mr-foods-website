@@ -11,7 +11,7 @@ const allItems = ALL_FOOD_ITEMS
 
 export default function OrderNowPage() {
   const router = useRouter();
-  const { state: cartState } = useCart();
+  const { state: cartState, clearCart } = useCart();
   
   const [customerName, setCustomerName] = useState('')
   const [numberOfPlates, setNumberOfPlates] = useState(1)
@@ -39,11 +39,11 @@ export default function OrderNowPage() {
   }
 
   const handleConfirmOrder = () => {
-    console.log('here');
     const hasValidData = customerName.trim() && Object.values(selectedItems).some(selected => selected);
-    console.log(hasValidData);
     if (hasValidData) {
       setShowConfirmation(true)
+      // Clear the cart immediately after successful order
+      clearCart()
       // Reset form after 15 seconds
       setTimeout(() => {
         setShowConfirmation(false)

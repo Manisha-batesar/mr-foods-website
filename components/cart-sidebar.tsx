@@ -28,6 +28,7 @@ export function CartSidebar() {
   const handleConfirmOrder = () => {
     setCartOpen(false)
     router.push(`/order-now`)
+    // Don't clear cart here - it will be cleared after successful order confirmation
   }
 
   return (
