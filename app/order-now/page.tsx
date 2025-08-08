@@ -1,16 +1,22 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { Check, ShoppingCart, User, Hash, CheckCircle } from 'lucide-react'
-import { useSearchParams } from 'next/navigation'
+import { Check, ShoppingCart, User, Hash, CheckCircle, X } from 'lucide-react'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { ALL_FOOD_ITEMS } from '../../lib/foodData'
+import { useCart } from '@/components/cart-context'
 
 // Combined menu items from both food and drinks
 const allItems = ALL_FOOD_ITEMS
 
 export default function OrderNowPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const { state: cartState } = useCart();
   const dishIdParam = searchParams.get('dishId');
+  const fromCart = searchParams.get('fromCart') === 'true';
+  const cartItemIds = searchParams.getAll('cartItem');
+  const quantities = searchParams.getAll('quantity');
 
   const [customerName, setCustomerName] = useState('')
   const [numberOfPlates, setNumberOfPlates] = useState(1)
@@ -28,16 +34,53 @@ export default function OrderNowPage() {
     }
   }, [dishIdParam])
 
-  // Calculate total bill whenever selected items change
+  // Pre-select items from cart if coming from cart
   useEffect(() => {
-    const total = Object.keys(selectedItems)
-      .filter(itemId => selectedItems[parseInt(itemId)])
-      .reduce((sum, itemId) => {
-        const item = allItems.find(item => item.id === parseInt(itemId))
-        return sum + (item ? item.price : 0)
-      }, 0)
-    setTotalBill(total * numberOfPlates)
-  }, [selectedItems, numberOfPlates])
+    if (fromCart && cartItemIds.length > 0) {
+      const cartSelections: {[key: number]: boolean} = {};
+      cartItemIds.forEach(itemId => {
+        const numericId = parseInt(itemId);
+        if (!isNaN(numericId)) {
+          cartSelections[numericId] = true;
+        }
+      });
+      setSelectedItems(cartSelections);
+      
+      // Set default customer name when coming from cart (user can change it)
+      if (!customerName) {
+        setCustomerName('');
+      }
+      
+      // Set plates to 1 when coming from cart (cart quantities are handled separately)
+      setNumberOfPlates(1);
+      
+      // Calculate total from cart items with their quantities
+      let cartTotal = 0;
+      cartItemIds.forEach((itemId, index) => {
+        const numericId = parseInt(itemId);
+        const quantity = quantities[index] ? parseInt(quantities[index]) : 1;
+        const item = allItems.find(item => item.id === numericId);
+        if (item) {
+          cartTotal += item.price * quantity;
+        }
+      });
+      setTotalBill(cartTotal);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
+
+  // Calculate total bill whenever selected items change (but not in cart mode)
+  useEffect(() => {
+    if (!fromCart) {
+      const total = Object.keys(selectedItems)
+        .filter(itemId => selectedItems[parseInt(itemId)])
+        .reduce((sum, itemId) => {
+          const item = allItems.find(item => item.id === parseInt(itemId))
+          return sum + (item ? item.price : 0)
+        }, 0)
+      setTotalBill(total * numberOfPlates)
+    }
+  }, [selectedItems, numberOfPlates, fromCart])
 
   const handleItemToggle = (itemId: number) => {
     setSelectedItems(prev => ({
@@ -47,15 +90,29 @@ export default function OrderNowPage() {
   }
 
   const handleConfirmOrder = () => {
-    if (customerName.trim() && Object.values(selectedItems).some(selected => selected)) {
+    // Always require customer name, even when coming from cart
+    const hasValidData = customerName.trim() && (fromCart || Object.values(selectedItems).some(selected => selected));
+    
+    if (hasValidData) {
       setShowConfirmation(true)
-      // Reset form after 3 seconds
+      // Reset form after 15 seconds
       setTimeout(() => {
         setShowConfirmation(false)
-        setCustomerName('')
-        setNumberOfPlates(1)
-        setSelectedItems({})
-      }, 18000)
+        if (!fromCart) {
+          setCustomerName('')
+          setNumberOfPlates(1)
+          setSelectedItems({})
+        }
+      }, 15000)
+    }
+  }
+
+  const handleCloseConfirmation = () => {
+    setShowConfirmation(false)
+    if (!fromCart) {
+      setCustomerName('')
+      setNumberOfPlates(1)
+      setSelectedItems({})
     }
   }
 
@@ -69,16 +126,46 @@ export default function OrderNowPage() {
           <div className="flex items-center justify-center mb-4">
             <ShoppingCart style={{ color: '#CF9FFF' }} className="mr-3" size={40} />
             <h1 className="text-4xl lg:text-5xl font-bold gradient-text">
-              Place Your Order
+              {fromCart ? 'Confirm Your Cart Order' : 'Place Your Order'}
             </h1>
           </div>
           <p className="text-gray-600 text-lg">
-            Fill in your details and select your favorite items
+            {fromCart 
+              ? 'Review your cart items and confirm your order'
+              : 'Fill in your details and select your favorite items'
+            }
           </p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-8">
-          {/* Customer Details */}
+          {/* Navigation buttons for easy access */}
+          {!showConfirmation && (
+            <div className="mb-6 flex flex-wrap gap-3 justify-center">
+              <button
+                onClick={() => router.push('/')}
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium transition-all duration-300 hover:bg-gray-200 flex items-center space-x-2"
+              >
+                <span>🏠</span>
+                <span>Home</span>
+              </button>
+              <button
+                onClick={() => router.push('/menu')}
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium transition-all duration-300 hover:bg-gray-200 flex items-center space-x-2"
+              >
+                <span>🍽️</span>
+                <span>Menu</span>
+              </button>
+              <button
+                onClick={() => router.push('/cold-drinks')}
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium transition-all duration-300 hover:bg-gray-200 flex items-center space-x-2"
+              >
+                <span>🥤</span>
+                <span>Cold Drinks</span>
+              </button>
+            </div>
+          )}
+
+          {/* Customer Details - Always show, but pre-filled when coming from cart */}
           <div className="mb-8">
             <h2 className="text-2xl font-bold mb-6 flex items-center" style={{ color: '#CF9FFF' }}>
               <User className="mr-3" size={24} />
@@ -107,7 +194,7 @@ export default function OrderNowPage() {
               
               <div>
                 <label className="block text-gray-700 font-semibold mb-2">
-                  Number of Plates
+                  Number of Plates *
                 </label>
                 <div className="flex items-center space-x-3">
                   <Hash style={{ color: '#CF9FFF' }} size={20} />
@@ -118,8 +205,13 @@ export default function OrderNowPage() {
                     value={numberOfPlates}
                     onChange={(e) => setNumberOfPlates(parseInt(e.target.value) || 1)}
                     className="w-full px-4 py-3 border-2 border-purple-200 rounded-lg focus:border-purple-500 focus:outline-none transition-colors"
+                    disabled={fromCart}
+                    style={fromCart ? { backgroundColor: '#f9fafb', color: '#6b7280' } : {}}
                   />
                 </div>
+                {fromCart && (
+                  <p className="text-sm text-gray-500 mt-1">Plates calculated based on cart quantities</p>
+                )}
               </div>
             </div>
           </div>
@@ -127,7 +219,7 @@ export default function OrderNowPage() {
           {/* Menu Items */}
           <div className="mb-8">
             <h2 className="text-2xl font-bold mb-6" style={{ color: '#CF9FFF' }}>
-              Select Items
+              {fromCart ? 'Your Selected Items' : 'Select Items'}
             </h2>
             
             {categories.map((category) => (
@@ -135,18 +227,17 @@ export default function OrderNowPage() {
                 <h3 className="text-lg font-semibold text-gray-800 mb-3 bg-purple-50 px-4 py-2 rounded-lg">
                   {category}
                 </h3>
-                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {allItems
                     .filter(item => item.category === category)
                     .map((item) => (
                       <label
                         key={item.id}
-                        className={`flex items-center justify-between p-4 border-2 rounded-lg cursor-pointer transition-all duration-300 ${
+                        className={`flex items-center justify-between p-4 border-2 rounded-lg transition-all duration-300 ${
                           selectedItems[item.id]
                             ? 'border-purple-500 bg-purple-50'
                             : 'border-gray-200 hover:border-purple-300 hover:bg-purple-25'
-                        }`}
+                        } cursor-pointer`}
                       >
                         <div className="flex items-center">
                           <input
@@ -171,6 +262,15 @@ export default function OrderNowPage() {
                           <span className="font-medium text-gray-800">
                             {item.name}
                           </span>
+                          {fromCart && (
+                            <span className="ml-2 text-sm text-purple-600 font-semibold">
+                              {(() => {
+                                const itemIndex = cartItemIds.findIndex(cartId => parseInt(cartId) === item.id);
+                                const quantity = itemIndex >= 0 ? (quantities[itemIndex] ? parseInt(quantities[itemIndex]) : 1) : 0;
+                                return quantity > 0 ? `×${quantity}` : '';
+                              })()}
+                            </span>
+                          )}
                         </div>
                         <span className="font-bold" style={{ color: '#CF9FFF' }}>
                           ₹{item.price}
@@ -188,14 +288,38 @@ export default function OrderNowPage() {
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span>Number of Plates:</span>
-                <span className="font-semibold">{numberOfPlates}</span>
+                <span className="font-semibold">
+                  {fromCart ? (
+                    <span>As per item quantities</span>
+                  ) : (
+                    numberOfPlates
+                  )}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span>Selected Items:</span>
                 <span className="font-semibold">
-                  {Object.values(selectedItems).filter(Boolean).length}
+                  {fromCart 
+                    ? cartItemIds.length
+                    : Object.values(selectedItems).filter(Boolean).length
+                  }
                 </span>
               </div>
+              {fromCart && (
+                <div className="text-sm text-gray-600 mt-2 bg-white rounded-lg p-3">
+                  <div className="font-semibold mb-2">Items from Cart:</div>
+                  {cartItemIds.map((itemId, index) => {
+                    const item = allItems.find(item => item.id === parseInt(itemId));
+                    const quantity = quantities[index] ? parseInt(quantities[index]) : 1;
+                    return item ? (
+                      <div key={itemId} className="flex justify-between py-1">
+                        <span>{item.name}</span>
+                        <span>×{quantity} = ₹{(item.price * quantity)}</span>
+                      </div>
+                    ) : null;
+                  })}
+                </div>
+              )}
               <div className="border-t border-purple-200 pt-2 mt-4">
                 <div className="flex justify-between text-xl font-bold" style={{ color: '#CF9FFF' }}>
                   <span>Total Bill:</span>
@@ -208,14 +332,14 @@ export default function OrderNowPage() {
           {/* Confirm Order Button */}
           <button
             onClick={handleConfirmOrder}
-            disabled={!customerName.trim() || !Object.values(selectedItems).some(selected => selected)}
+            disabled={!customerName.trim() || (!fromCart && !Object.values(selectedItems).some(selected => selected))}
             className={`w-full py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 ${
-              customerName.trim() && Object.values(selectedItems).some(selected => selected)
+              customerName.trim() && (fromCart || Object.values(selectedItems).some(selected => selected))
                 ? 'text-white shadow-lg hover:shadow-xl'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
             style={{
-              background: customerName.trim() && Object.values(selectedItems).some(selected => selected)
+              background: customerName.trim() && (fromCart || Object.values(selectedItems).some(selected => selected))
                 ? 'linear-gradient(135deg, #CF9FFF, #B87FFF)'
                 : undefined
             }}
@@ -227,69 +351,90 @@ export default function OrderNowPage() {
         {/* Confirmation Popup */}
         {showConfirmation && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-3xl p-8 max-w-md mx-4 order-popup shadow-2xl border-4" 
+            <div className="bg-white rounded-2xl p-6 max-w-sm mx-4 order-popup shadow-2xl border-4 relative" 
                  style={{ borderColor: '#CF9FFF' }}>
+              {/* Close Button */}
+              <button
+                onClick={handleCloseConfirmation}
+                className="absolute top-3 right-3 p-1 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
+                aria-label="Close confirmation"
+              >
+                <X className="h-4 w-4 text-gray-600" />
+              </button>
+              
               <div className="text-center">
                 {/* Cute animated checkmark */}
-                <div className="bg-gradient-to-r from-green-400 to-green-500 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6 animate-accordion-up">
-                  <CheckCircle className="text-white" size={48} />
+                <div className="bg-gradient-to-r from-green-400 to-green-500 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="text-white" size={32} />
                 </div>
                 
                 {/* Main heading */}
-                <h3 className="text-3xl font-bold mb-3 gradient-text">
+                <h3 className="text-2xl font-bold mb-3 gradient-text">
                   Order Confirmed! 🎉
                 </h3>
                 
                 {/* Customer name */}
-                <p className="text-xl text-gray-700 mb-4">
+                <p className="text-lg text-gray-700 mb-3">
                   Thank you, <span className="font-bold" style={{ color: '#CF9FFF' }}>{customerName}</span>! ❤️
                 </p>
                 
                 {/* Ready time message */}
-                <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-6 mb-4 border-2 border-purple-200">
-                  <div className="text-2xl mb-2">🍽️</div>
-                  <p className="text-purple-800 font-bold text-lg mb-2">
+                <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-4 mb-3 border-2 border-purple-200">
+                  <p className="text-purple-800 font-bold text-sm mb-1">
                     Your delicious food will be ready in
                   </p>
-                  <div className="text-4xl font-bold mb-2" style={{ color: '#CF9FFF' }}>
+                  <div className="text-2xl font-bold mb-1" style={{ color: '#CF9FFF' }}>
                     15 Minutes
                   </div>
-                  <p className="text-purple-700 text-sm">
+                  <p className="text-purple-700 text-xs">
                     We're preparing it with love! 👨‍🍳✨
                   </p>
                 </div>
                 
-                {/* Thank you message */}
-                <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-xl p-4 mb-4 border-2 border-yellow-200">
-                  <p className="text-orange-800 font-semibold text-lg">
-                    🙏 Thank you for being part of 
-                  </p>
-                  <p className="text-2xl font-bold gradient-text">
-                    𝗠𝗥 Foods Family!
-                  </p>
-                </div>
-                
                 {/* Order details */}
-                <div className="bg-gray-50 rounded-xl p-4 mb-6">
-                  <p className="text-gray-600 text-sm mb-1">Order Summary:</p>
-                  <p className="text-lg font-bold text-gray-800">
-                    {Object.values(selectedItems).filter(Boolean).length} items × {numberOfPlates} plates
+                <div className="bg-gray-50 rounded-xl p-3 mb-4">
+                  <p className="text-gray-600 text-xs mb-1">Order Summary:</p>
+                  <p className="text-sm font-bold text-gray-800">
+                    {fromCart 
+                      ? `${cartItemIds.length} items from cart`
+                      : `${Object.values(selectedItems).filter(Boolean).length} items × ${numberOfPlates} plates`
+                    }
                   </p>
-                  <p className="text-2xl font-bold text-purple-600">
+                  <p className="text-lg font-bold text-purple-600">
                     Total: ₹{totalBill}
                   </p>
                 </div>
                 
-                {/* Cute closing message */}
-                <div className="text-center">
-                  <p className="text-gray-500 text-sm mb-2">
-                    🌟 Get ready for an amazing taste experience! 🌟
-                  </p>
-                  <div className="flex justify-center space-x-2 text-2xl">
-                    <span>🍕</span>
-                    <span>🍔</span>
-                    <span>🍜</span>
-                    <span>🥤</span>
+                {/* Navigation buttons */}
+                <div className="flex flex-col space-y-2">
+                  <button
+                    onClick={() => {
+                      handleCloseConfirmation();
+                      router.push('/');
+                    }}
+                    className="w-full py-2 px-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg font-semibold transition-all duration-300 hover:scale-105"
+                  >
+                    Go to Home
+                  </button>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => {
+                        handleCloseConfirmation();
+                        router.push('/menu');
+                      }}
+                      className="flex-1 py-2 px-3 bg-gray-100 text-gray-700 rounded-lg font-medium transition-all duration-300 hover:bg-gray-200"
+                    >
+                      Browse Menu
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleCloseConfirmation();
+                        router.push('/cold-drinks');
+                      }}
+                      className="flex-1 py-2 px-3 bg-gray-100 text-gray-700 rounded-lg font-medium transition-all duration-300 hover:bg-gray-200"
+                    >
+                      Cold Drinks
+                    </button>
                   </div>
                 </div>
               </div>

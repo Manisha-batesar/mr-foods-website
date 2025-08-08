@@ -6,9 +6,11 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 export function CartSidebar() {
   const { state, removeItem, updateQuantity, clearCart, setCartOpen } = useCart()
+  const router = useRouter()
 
   const handleQuantityChange = (id: string, newQuantity: number) => {
     if (newQuantity < 1) {
@@ -21,6 +23,15 @@ export function CartSidebar() {
   const handleCheckout = () => {
     // Implement checkout logic here
     alert("Proceeding to checkout...")
+  }
+
+  const handleConfirmOrder = () => {
+    // Convert cart items to query parameters and navigate to order page
+    const cartItemIds = state.items.map(item => `cartItem=${encodeURIComponent(item.id)}`).join('&')
+    const quantities = state.items.map(item => `quantity=${item.quantity}`).join('&')
+    
+    setCartOpen(false)
+    router.push(`/order-now?fromCart=true&${cartItemIds}&${quantities}`)
   }
 
   return (
@@ -137,6 +148,15 @@ export function CartSidebar() {
                     size="lg"
                   >
                     Checkout
+                  </Button>
+                  
+                  <Button 
+                    onClick={handleConfirmOrder}
+                    className="w-full text-white font-semibold transition-all duration-300 transform hover:scale-105"
+                    style={{ background: 'linear-gradient(135deg, #CF9FFF, #B87FFF)' }}
+                    size="lg"
+                  >
+                    Confirm My Order
                   </Button>
                   
                   <Button 

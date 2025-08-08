@@ -18,7 +18,6 @@ export default function Header() {
     { href: '/', label: 'Home' },
     { href: '/menu', label: 'Menu' },
     { href: '/cold-drinks', label: 'Cold Drinks' },
-    { href: '/order-now', label: 'Order Now' },
   ]
 
   const isActive = (href: string) => pathname === href
