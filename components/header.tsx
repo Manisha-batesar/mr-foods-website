@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
-import { Menu, ShoppingCart, X } from 'lucide-react'
+import { Menu, ShoppingCart, X, User } from 'lucide-react'
 import { useCart } from './cart-context'
 import { Button } from './ui/button'
 import { Badge } from './ui/badge'
@@ -80,24 +80,35 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
+            
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:bg-[#CF9FFF]/10 transition-colors duration-300 p-2"
+              style={{ width: '44px', height: '44px' }}
+            >
+              <User className="h-6 w-6 text-gray-700 hover:text-[#CF9FFF]" />
+            </Button>
           </nav>
 
-           <Button
-              variant="outline"
-              size="icon"
-              className="relative hover:bg-[#CF9FFF]"
-              onClick={toggleCart}
-            >
-              <ShoppingCart className="h-5 w-5" />
-              {itemCount > 0 && (
-                <Badge 
-                  variant="destructive" 
-                  className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
-                >
-                  {itemCount}
-                </Badge>
-              )}
-            </Button>
+           <div className="flex items-center space-x-4">
+             <Button
+                variant="outline"
+                size="icon"
+                className="relative hover:bg-[#CF9FFF]"
+                onClick={toggleCart}
+              >
+                <ShoppingCart className="h-5 w-5" />
+                {itemCount > 0 && (
+                  <Badge 
+                    variant="destructive" 
+                    className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                  >
+                    {itemCount}
+                  </Badge>
+                )}
+              </Button>
+            </div>
 
           {/* Mobile Menu Button */}
           <button
