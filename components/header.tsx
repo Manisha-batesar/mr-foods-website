@@ -7,12 +7,14 @@ import { Menu, ShoppingCart, X, User } from 'lucide-react'
 import { useCart } from './cart-context'
 import { Button } from './ui/button'
 import { Badge } from './ui/badge'
+import { LoginModal } from './login-modal'
 
 export default function Header() {
     const { state, toggleCart } = useCart()
   const itemCount = state.items.reduce((total, item) => total + item.quantity, 0)
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isLoginOpen, setIsLoginOpen] = useState(false)
 
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -86,8 +88,9 @@ export default function Header() {
               size="icon"
               className="hover:bg-[#CF9FFF]/10 transition-colors duration-300 p-2"
               style={{ width: '44px', height: '44px' }}
+              onClick={() => setIsLoginOpen(true)}
             >
-              <User className="h-6 w-6 text-gray-700 hover:text-[#CF9FFF]" />
+              <User className="h-7 w-7 text-gray-700 hover:text-[#CF9FFF]" />
             </Button>
           </nav>
 
@@ -109,42 +112,14 @@ export default function Header() {
                 )}
               </Button>
             </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2 text-gray-700 hover:text-purple-600 transition-colors"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
         </div>
-
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <nav className="md:hidden mt-4 pb-4 border-t border-purple-100 pt-4">
-            <div className="flex flex-col space-y-3">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`font-medium py-2 px-4 rounded-lg transition-all duration-300 ${
-                    isActive(link.href)
-                      ? 'text-purple-600 bg-purple-50'
-                      : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'
-                  }`}
-                  style={{
-                    color: isActive(link.href) ? '#CF9FFF' : undefined,
-                    backgroundColor: isActive(link.href) ? '#F8F0FE' : undefined,
-                  }}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-          </nav>
-        )}
       </div>
+
+      {/* Login Modal */}
+      <LoginModal 
+        isOpen={isLoginOpen} 
+        onClose={() => setIsLoginOpen(false)} 
+      />
     </header>
   )
 }
