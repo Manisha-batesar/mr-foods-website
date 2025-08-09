@@ -5,12 +5,14 @@ import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { Menu, ShoppingCart, X, User } from 'lucide-react'
 import { useCart } from './cart-context'
+import { useUser } from './user-context'
 import { Button } from './ui/button'
 import { Badge } from './ui/badge'
 import { LoginModal } from './login-modal'
 
 export default function Header() {
-    const { state, toggleCart } = useCart()
+  const { state, toggleCart } = useCart()
+  const { user } = useUser()
   const itemCount = state.items.reduce((total, item) => total + item.quantity, 0)
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -83,15 +85,22 @@ export default function Header() {
               </Link>
             ))}
             
-            <Button
-              variant="ghost"
-              size="icon"
-              className="hover:bg-[#CF9FFF]/10 transition-colors duration-300 p-2"
-              style={{ width: '44px', height: '44px' }}
-              onClick={() => setIsLoginOpen(true)}
-            >
-              <User className="h-7 w-7 text-gray-700 hover:text-[#CF9FFF]" />
-            </Button>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hover:bg-[#CF9FFF]/10 transition-colors duration-300 p-2 relative"
+                style={{ width: '44px', height: '44px' }}
+                onClick={() => setIsLoginOpen(true)}
+              >
+                <User className="h-7 w-7 text-gray-700 hover:text-[#CF9FFF]" />
+              </Button>
+              {user?.initials && (
+                <span className="text-sm font-medium px-2 py-1 bg-[#CF9FFF]/10 rounded-md text-[#CF9FFF]">
+                  {user.initials}
+                </span>
+              )}
+            </div>
           </nav>
 
            <div className="flex items-center space-x-4">
