@@ -5,6 +5,7 @@ import Header from '@/components/header'
 import Footer from '@/components/footer'
 import { CartProvider } from '@/components/cart-context'
 import { UserProvider } from '@/components/user-context'
+import { OrdersProvider } from '@/components/orders-context'
 import { CartSidebar } from '@/components/cart-sidebar'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -25,14 +26,16 @@ export default function RootLayout({
       <body className={inter.className}>
         <CartProvider>
           <UserProvider>
-            <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-50 to-white">
-              <CartSidebar />
-              <Header />
-              <main className="flex-1 pt-20">
-                {children}
-              </main>
-              <Footer />
-            </div>
+            <OrdersProvider>
+              <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-50 to-white">
+                <CartSidebar />
+                <Header />
+                <main className="flex-1 pt-20">
+                  {children}
+                </main>
+                <Footer />
+              </div>
+            </OrdersProvider>
           </UserProvider>
         </CartProvider>
       </body>

@@ -11,6 +11,7 @@ interface UserState {
 interface UserContextType {
   user: UserState | null;
   setUser: (user: UserState | null) => void;
+  logout: () => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -33,8 +34,16 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const handleLogout = () => {
+    handleSetUser(null);
+  };
+
   return (
-    <UserContext.Provider value={{ user, setUser: handleSetUser }}>
+    <UserContext.Provider value={{ 
+      user, 
+      setUser: handleSetUser,
+      logout: handleLogout 
+    }}>
       {children}
     </UserContext.Provider>
   );

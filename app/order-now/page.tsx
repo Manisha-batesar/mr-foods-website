@@ -5,6 +5,8 @@ import { Check, ShoppingCart, User, Hash, CheckCircle, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { ALL_FOOD_ITEMS } from '../../lib/foodData'
 import { useCart } from '@/components/cart-context'
+import { useOrders } from '@/components/orders-context'
+import { useUser } from '@/components/user-context'
 
 // Combined menu items from both food and drinks
 const allItems = ALL_FOOD_ITEMS
@@ -38,9 +40,24 @@ export default function OrderNowPage() {
     }))
   }
 
+  const { user } = useUser()
+  const { addOrder } = useOrders()
+
   const handleConfirmOrder = () => {
     const hasValidData = customerName.trim() && Object.values(selectedItems).some(selected => selected);
     if (hasValidData) {
+      // Create a new order from cart items
+      const newOrder = {
+        id: `ORD-${Date.now()}`,
+        date: new Date().toISOString(),
+        items: cartState.items,
+        total: cartState.total,
+        status: 'completed' as const
+      }
+      
+      // Add the order to order history
+      addOrder(newOrder)
+      
       setShowConfirmation(true)
       // Clear the cart immediately after successful order
       clearCart()
@@ -50,7 +67,9 @@ export default function OrderNowPage() {
         setCustomerName('')
         setNumberOfPlates(1)
         setSelectedItems({})
-      }, 15000)
+        // Navigate to order history page
+        router.push('/order-history')
+      }, 3000)
     }
   }
 
