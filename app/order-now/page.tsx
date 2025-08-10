@@ -136,42 +136,42 @@ export default function OrderNowPage() {
   const categories = [...new Set(allItems.map(item => item.category))]
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen py-4 sm:py-8">
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6 sm:mb-8">
           <div className="flex items-center justify-center mb-4">
-            <ShoppingCart style={{ color: '#CF9FFF' }} className="mr-3" size={40} />
-            <h1 className="text-4xl lg:text-5xl font-bold gradient-text">
-              Confirm Your Cart Order
+            <ShoppingCart style={{ color: '#CF9FFF' }} className="mr-3" size={32} />
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold gradient-text">
+              Confirm Your Order
             </h1>
           </div>
-          <p className="text-gray-600 text-lg">
-            Review your cart items and confirm your order
+          <p className="text-gray-600 text-base sm:text-lg">
+            Review your items and confirm your order
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-8">
           {/* Navigation buttons for easy access */}
           {!showConfirmation && (
-            <div className="mb-6 flex flex-wrap gap-3 justify-center">
+            <div className="mb-4 sm:mb-6 flex flex-wrap gap-2 sm:gap-3 justify-center">
               <button
                 onClick={() => router.push('/')}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium transition-all duration-300 hover:bg-gray-200 flex items-center space-x-2"
+                className="px-3 py-2 sm:px-4 sm:py-2 bg-gray-100 text-gray-700 rounded-lg font-medium transition-all duration-300 hover:bg-gray-200 flex items-center space-x-2 text-sm sm:text-base"
               >
                 <span>🏠</span>
                 <span>Home</span>
               </button>
               <button
                 onClick={() => router.push('/menu')}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium transition-all duration-300 hover:bg-gray-200 flex items-center space-x-2"
+                className="px-3 py-2 sm:px-4 sm:py-2 bg-gray-100 text-gray-700 rounded-lg font-medium transition-all duration-300 hover:bg-gray-200 flex items-center space-x-2 text-sm sm:text-base"
               >
                 <span>🍽️</span>
                 <span>Menu</span>
               </button>
               <button
                 onClick={() => router.push('/cold-drinks')}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium transition-all duration-300 hover:bg-gray-200 flex items-center space-x-2"
+                className="px-3 py-2 sm:px-4 sm:py-2 bg-gray-100 text-gray-700 rounded-lg font-medium transition-all duration-300 hover:bg-gray-200 flex items-center space-x-2 text-sm sm:text-base"
               >
                 <span>🥤</span>
                 <span>Cold Drinks</span>
@@ -180,22 +180,22 @@ export default function OrderNowPage() {
           )}
 
           {/* Customer Details - Always show, but pre-filled when coming from cart */}
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold mb-6 flex items-center" style={{ color: '#CF9FFF' }}>
-              <User className="mr-3" size={24} />
+          <div className="mb-6 sm:mb-8">
+            <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 flex items-center" style={{ color: '#CF9FFF' }}>
+              <User className="mr-3" size={20} />
               Customer Details
             </h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-4 sm:gap-6">
               <div>
-                <label className="block text-gray-700 font-semibold mb-2">
+                <label className="block text-gray-700 font-semibold mb-2 text-sm sm:text-base">
                   Your Name *
                 </label>
                 <input
                   type="text"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
-                  className="w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors"
+                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border-2 rounded-lg focus:outline-none transition-colors text-sm sm:text-base"
                   style={{ 
                     borderColor: '#CF9FFF'
                   }}
@@ -205,62 +205,40 @@ export default function OrderNowPage() {
                   required
                 />
               </div>
-              
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">
-                  Number of Plates *
-                </label>
-                <div className="flex items-center space-x-3">
-                  <Hash style={{ color: '#CF9FFF' }} size={20} />
-                  <input
-                    type="number"
-                    min="1"
-                    max="10"
-                    value={numberOfPlates}
-                    onChange={(e) => setNumberOfPlates(parseInt(e.target.value) || 1)}
-                    className="w-full px-4 py-3 border-2 border-purple-200 rounded-lg focus:border-purple-500 focus:outline-none transition-colors"
-                    disabled={true}
-                    style={true ? { backgroundColor: '#f9fafb', color: '#6b7280' } : {}}
-                  />
-                </div>
-                {true && (
-                  <p className="text-sm text-gray-500 mt-1">Plates calculated based on cart quantities</p>
-                )}
-              </div>
             </div>
           </div>
 
           {/* Menu Items */}
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold mb-6" style={{ color: '#CF9FFF' }}>
+          <div className="mb-6 sm:mb-8">
+            <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6" style={{ color: '#CF9FFF' }}>
               Your Selected Items
             </h2>
             
             {categories.map((category) => (
-              <div key={category} className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-3 bg-purple-50 px-4 py-2 rounded-lg">
+              <div key={category} className="mb-4 sm:mb-6">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-2 sm:mb-3 bg-purple-50 px-3 py-2 sm:px-4 sm:py-2 rounded-lg">
                   {category}
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-2 sm:gap-3">
                   {allItems
                     .filter(item => item.category === category)
                     .map((item) => (
                       <label
                         key={item.id}
-                        className={`flex items-center justify-between p-4 border-2 rounded-lg transition-all duration-300 ${
+                        className={`flex items-center justify-between p-3 sm:p-4 border-2 rounded-lg transition-all duration-300 ${
                           selectedItems[item.id]
                             ? 'border-purple-500 bg-purple-50'
                             : 'border-gray-200 hover:border-purple-300 hover:bg-purple-25'
                         } cursor-pointer`}
                       >
-                        <div className="flex items-center">
+                        <div className="flex items-center flex-1">
                           <input
                             type="checkbox"
                             checked={selectedItems[item.id] || false}
                             onChange={() => handleItemToggle(item.id)}
                             className="hidden"
                           />
-                          <div className={`w-5 h-5 border-2 rounded mr-3 flex items-center justify-center ${
+                          <div className={`w-4 h-4 sm:w-5 sm:h-5 border-2 rounded mr-2 sm:mr-3 flex items-center justify-center ${
                             selectedItems[item.id]
                               ? 'text-white'
                               : 'border-gray-300'
@@ -270,23 +248,25 @@ export default function OrderNowPage() {
                             backgroundColor: selectedItems[item.id] ? '#CF9FFF' : 'transparent'
                           }}>
                             {selectedItems[item.id] && (
-                              <Check className="text-white" size={14} />
+                              <Check className="text-white" size={12} />
                             )}
                           </div>
-                          <span className="font-medium text-gray-800">
-                            {item.name}
-                          </span>
-                          {true && (
-                            <span className="ml-2 text-sm text-purple-600 font-semibold">
-                              {(() => {
-                                const itemIndex = cartState.items.findIndex(cartItem => parseInt(cartItem.id) === item.id);
-                                const quantity = itemIndex >= 0 ? (cartState.items[itemIndex].quantity ? parseInt(String(cartState.items[itemIndex].quantity)) : 1) : 0;
-                                return quantity > 0 ? `×${quantity}` : '';
-                              })()}
+                          <div className="flex-1">
+                            <span className="font-medium text-gray-800 text-sm sm:text-base">
+                              {item.name}
                             </span>
-                          )}
+                            {true && (
+                              <span className="ml-2 text-xs sm:text-sm text-purple-600 font-semibold">
+                                {(() => {
+                                  const itemIndex = cartState.items.findIndex(cartItem => parseInt(cartItem.id) === item.id);
+                                  const quantity = itemIndex >= 0 ? (cartState.items[itemIndex].quantity ? parseInt(String(cartState.items[itemIndex].quantity)) : 1) : 0;
+                                  return quantity > 0 ? `×${quantity}` : '';
+                                })()}
+                              </span>
+                            )}
+                          </div>
                         </div>
-                        <span className="font-bold" style={{ color: '#CF9FFF' }}>
+                        <span className="font-bold text-sm sm:text-base" style={{ color: '#CF9FFF' }}>
                           ₹{item.price}
                         </span>
                       </label>
@@ -297,10 +277,10 @@ export default function OrderNowPage() {
           </div>
 
           {/* Order Summary */}
-          <div className="bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl p-6 mb-8">
-            <h3 className="text-xl font-bold mb-4" style={{ color: '#CF9FFF' }}>Order Summary</h3>
+          <div className="bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8">
+            <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4" style={{ color: '#CF9FFF' }}>Order Summary</h3>
             <div className="space-y-2">
-              <div className="flex justify-between">
+              <div className="flex justify-between text-sm sm:text-base">
                 <span>Selected Items:</span>
                 <span className="font-semibold">
                   {(() => {
@@ -310,7 +290,7 @@ export default function OrderNowPage() {
                 </span>
               </div>
               <div className="border-t border-purple-200 pt-2 mt-4">
-                <div className="flex justify-between text-xl font-bold" style={{ color: '#CF9FFF' }}>
+                <div className="flex justify-between text-lg sm:text-xl font-bold" style={{ color: '#CF9FFF' }}>
                   <span>Total Bill:</span>
                   <span>₹{totalBill}</span>
                 </div>
@@ -322,7 +302,7 @@ export default function OrderNowPage() {
           <button
             onClick={handleConfirmOrder}
             disabled={!customerName.trim() || !Object.values(selectedItems).some(selected => selected)}
-            className={`w-full py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 ${
+            className={`w-full py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 transform hover:scale-105 ${
               customerName.trim() && Object.values(selectedItems).some(selected => selected)
                 ? 'text-white shadow-lg hover:shadow-xl cursor-pointer'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'

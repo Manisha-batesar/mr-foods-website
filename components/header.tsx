@@ -32,22 +32,22 @@ export default function Header() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3 group">
+          <Link href="/" className="flex items-center space-x-2 sm:space-x-3 group">
             <div className="relative">
               {/* Logo Background Circle */}
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-white to-purple-50 shadow-lg flex items-center justify-center border-2 border-purple-200 group-hover:scale-110 transition-all duration-300">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-white to-purple-50 shadow-lg flex items-center justify-center border-2 border-purple-200 group-hover:scale-110 transition-all duration-300">
                 <div className="text-lg font-black gradient-text">
-                  <img src="/images/MR-logo.png" className = "rounded-full" alt="" />
+                  <img src="/images/MR-logo.png" className="rounded-full w-full h-full object-cover" alt="" />
                 </div>
               </div>
               {/* Decorative dots */}
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-pink-400 to-purple-400 rounded-full animate-pulse"></div>
+              <div className="absolute -top-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-gradient-to-r from-pink-400 to-purple-400 rounded-full animate-pulse"></div>
             </div>
             <div className="flex flex-col">
-              <div className="text-2xl font-black gradient-text leading-none tracking-tight">
+              <div className="text-xl sm:text-2xl font-black gradient-text leading-none tracking-tight">
                 𝗠𝗥 Foods
               </div>
-              <div className="text-xs text-gray-500 font-medium tracking-widest">
+              <div className="text-xs text-gray-500 font-medium tracking-widest hidden sm:block">
                 DELICIOUS • FRESH
               </div>
             </div>
@@ -103,25 +103,86 @@ export default function Header() {
             </div>
           </nav>
 
-           <div className="flex items-center space-x-4">
-             <Button
-                variant="outline"
-                size="icon"
-                className="relative hover:bg-[#CF9FFF]"
-                onClick={toggleCart}
-              >
-                <ShoppingCart className="h-5 w-5" />
-                {itemCount > 0 && (
-                  <Badge 
-                    variant="destructive" 
-                    className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
-                  >
-                    {itemCount}
-                  </Badge>
-                )}
-              </Button>
+          {/* Mobile & Cart Actions */}
+          <div className="flex items-center space-x-2">
+            {/* User Menu/Login for Mobile */}
+            <div className="md:hidden">
+              {user ? (
+                <UserMenu />
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="hover:bg-[#CF9FFF]/10 transition-colors duration-300"
+                  onClick={() => setIsLoginOpen(true)}
+                >
+                  <User className="h-5 w-5 text-gray-700" />
+                </Button>
+              )}
             </div>
+
+            {/* Cart Button */}
+            <Button
+              variant="outline"
+              size="icon"
+              className="relative hover:bg-[#CF9FFF]"
+              onClick={toggleCart}
+            >
+              <ShoppingCart className="h-5 w-5" />
+              {itemCount > 0 && (
+                <Badge 
+                  variant="destructive" 
+                  className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                >
+                  {itemCount}
+                </Badge>
+              )}
+            </Button>
+
+            {/* Mobile Menu Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden hover:bg-[#CF9FFF]/10"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? (
+                <X className="h-6 w-6 text-gray-700" />
+              ) : (
+                <Menu className="h-6 w-6 text-gray-700" />
+              )}
+            </Button>
+          </div>
         </div>
+
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-md border-b border-purple-100 shadow-lg">
+            <nav className="container mx-auto px-4 py-4">
+              <div className="flex flex-col space-y-4">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`font-medium py-2 px-4 rounded-lg transition-all duration-300 ${
+                      isActive(link.href)
+                        ? 'text-white shadow-md'
+                        : 'text-gray-700 hover:bg-purple-50'
+                    }`}
+                    style={{
+                      background: isActive(link.href) 
+                        ? 'linear-gradient(135deg, #CF9FFF, #B87FFF)'
+                        : 'transparent'
+                    }}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            </nav>
+          </div>
+        )}
       </div>
 
       {/* Login Modal */}
