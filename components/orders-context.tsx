@@ -1,7 +1,8 @@
 "use client"
 
-import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react'
+import React, { createContext, useContext, useReducer, ReactNode, useEffect, useState } from 'react'
 import { CartItem } from './cart-context'
+import { useUser } from './user-context'
 
 export interface OrderItem extends CartItem {}
 
@@ -12,6 +13,8 @@ export interface Order {
   total: number
   status: 'completed' | 'pending' | 'cancelled'
   orderTime?: number
+  username: string // associate order with user
+  customerName: string // display name of the user
 }
 
 interface OrdersState {
@@ -65,9 +68,12 @@ const loadOrdersState = (): OrdersState => {
   
   const savedState = localStorage.getItem('ordersState')
   if (savedState) {
-    return JSON.parse(savedState)
+    const parsedState = JSON.parse(savedState)
+    console.log('OrdersContext: Loaded from localStorage:', parsedState);
+    return parsedState
   }
   
+  console.log('OrdersContext: No saved state, returning empty orders');
   return { orders: [] }
 }
 
@@ -79,12 +85,26 @@ const saveOrdersState = (state: OrdersState) => {
 
 export const OrdersProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(ordersReducer, loadOrdersState())
+  const { user } = useUser();
+  const [isUserLoaded, setIsUserLoaded] = useState(false);
 
   useEffect(() => {
     saveOrdersState(state)
   }, [state])
 
+  // Track when user data has been loaded (including null for no user)
+  useEffect(() => {
+    // Give a small delay to ensure user context has initialized
+    const timer = setTimeout(() => {
+      setIsUserLoaded(true);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const addOrder = (order: Order) => {
+    console.log('📦 OrdersContext: Adding order:', order);
+    console.log('📦 OrdersContext: Current user:', user?.username);
     dispatch({ type: 'ADD_ORDER', payload: order })
   }
 
@@ -110,9 +130,24 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
     return () => clearInterval(interval)
   }, [state.orders])
 
+  // Only filter orders if user context has loaded
+  const filteredOrders = isUserLoaded && user 
+    ? state.orders.filter(order => order.username === user.username) 
+    : isUserLoaded 
+    ? [] // No user logged in
+    : state.orders; // Still loading user context, show all orders temporarily
+  
+  // Debug logging
+  useEffect(() => {
+    if (isUserLoaded) {
+      console.log('📦 OrdersContext: User loaded. Username:', user?.username, 'Total orders:', state.orders.length, 'Filtered orders:', filteredOrders.length);
+      console.log('📦 OrdersContext: All orders:', state.orders.map(o => ({ id: o.id, username: o.username, customerName: o.customerName })));
+    }
+  }, [isUserLoaded, user, state.orders, filteredOrders.length]);
+
   return (
     <OrdersContext.Provider value={{
-      orders: state.orders,
+      orders: filteredOrders,
       addOrder,
       clearOrders,
       updateOrderStatus

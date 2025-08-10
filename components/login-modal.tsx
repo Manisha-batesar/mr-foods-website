@@ -30,7 +30,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     return users ? JSON.parse(users) : [];
   };
 
-  // Helper to save user to localStorage (for uniqueness check)
+  // Helper to save user to localStorage (for registration)
   const saveUserToList = (user: any) => {
     const users = getAllUsers();
     users.push(user);
@@ -40,20 +40,43 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    // Username uniqueness check
+    
+    console.log('Login attempt:', { username, password, firstName, lastName, fullName });
+    
     const users = getAllUsers();
-    if (users.some((u: any) => u.username === username)) {
-      setError('This Special Username is already taken. Please choose another.');
-      toast({ title: 'Username already taken', description: 'Please choose a unique Special Username.', variant: 'destructive' });
+    console.log('All users:', users);
+    
+    // Try to find a user with matching username+password
+    const foundUser = users.find((u: any) => u.username === username && u.password === password);
+    if (foundUser) {
+      // Log in existing user
+      console.log('Found existing user:', foundUser);
+      setUser(foundUser)
+      toast({ title: 'Welcome back!', description: `Hello, ${foundUser.fullName || foundUser.firstName}!`, variant: 'default' });
+      onClose()
       return;
     }
+    
+    // If username exists but password is wrong
+    if (users.some((u: any) => u.username === username)) {
+      setError('Incorrect password for this username.');
+      toast({ title: 'Incorrect password', description: 'Please check your password and try again.', variant: 'destructive' });
+      return;
+    }
+    
+    // Register new user - username is unique at this point
+    // Validate required fields for registration
+    if (!firstName.trim() || !lastName.trim()) {
+      setError('First name and last name are required for new registration.');
+      toast({ title: 'Missing information', description: 'Please fill in your first and last name.', variant: 'destructive' });
+      return;
+    }
+    
     // Create initials from first and last name
     const firstInitial = firstName.charAt(0).toUpperCase()
     const lastInitial = lastName.charAt(0).toUpperCase()
     const initials = `${firstInitial}${lastInitial}`
-    // Compose full name if not provided
     const displayFullName = fullName || `${firstName} ${lastName}`.trim();
-    // Set user data
     const userObj = {
       firstName,
       lastName,
@@ -62,8 +85,11 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
       password,
       fullName: displayFullName
     };
+    
+    console.log('Creating new user:', userObj);
     setUser(userObj)
     saveUserToList(userObj)
+    toast({ title: 'Account created!', description: `Welcome, ${displayFullName}!`, variant: 'default' });
     onClose()
   }
 
