@@ -6,6 +6,9 @@ interface UserState {
   firstName: string;
   lastName: string;
   initials: string;
+  username: string;
+  password: string;
+  fullName?: string;
 }
 
 interface UserContextType {
