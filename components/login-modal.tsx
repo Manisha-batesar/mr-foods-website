@@ -23,6 +23,16 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const { setUser } = useUser()
   const { toast } = useToast();
 
+  // Clear all form fields (can be used on logout or login)
+  const clearAllInputs = () => {
+    setUsername('');
+    setPassword('');
+    setEmail('');
+    setFullName('');
+    setError('');
+    setMode('select');
+  }
+
   // Reset form when switching modes
   const resetForm = () => {
     setUsername('')
@@ -105,6 +115,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
         description: `Hello, ${foundUser.fullName || foundUser.username}!`, 
         variant: 'default' 
       });
+      clearAllInputs();
       onClose()
     } else {
       // Check if username exists but password is wrong
@@ -186,11 +197,17 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
       description: `Welcome, ${fullName}!`, 
       variant: 'default' 
     });
+    clearAllInputs();
     onClose()
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      if (!open) {
+        resetForm();
+        onClose();
+      }
+    }}>
       <DialogContent className="sm:max-w-[425px] w-[95vw] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center gradient-text">
@@ -244,16 +261,17 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 ← Back
               </Button>
             </div>
-            <form onSubmit={handleSignIn} className="space-y-4">
+            <form onSubmit={handleSignIn} className="space-y-4" autoComplete="off">
               <div className="space-y-2">
                 <Label htmlFor="signin-username">Username</Label>
                 <Input
                   id="signin-username"
+                  name="signin-username"
                   placeholder="Enter your username"
                   value={username}
                   onChange={e => setUsername(e.target.value)}
                   required
-                  autoComplete="username"
+                  autoComplete="new-username"
                   className="border-2 focus:border-[#CF9FFF] transition-colors"
                 />
                 <div className="text-xs text-gray-500">
@@ -264,12 +282,13 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 <Label htmlFor="signin-password">Password</Label>
                 <Input
                   id="signin-password"
+                  name="signin-password"
                   type="password"
                   placeholder="Enter your password"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   required
-                  autoComplete="current-password"
+                  autoComplete="new-password"
                   className="border-2 focus:border-[#CF9FFF] transition-colors"
                 />
                 <div className="text-xs text-gray-500">
@@ -304,16 +323,17 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 ← Back
               </Button>
             </div>
-            <form onSubmit={handleSignUp} className="space-y-4">
+            <form onSubmit={handleSignUp} className="space-y-4" autoComplete="off">
               <div className="space-y-2">
                 <Label htmlFor="signup-username">Username</Label>
                 <Input
                   id="signup-username"
+                  name="signup-username"
                   placeholder="Choose a unique username"
                   value={username}
                   onChange={e => setUsername(e.target.value)}
                   required
-                  autoComplete="username"
+                  autoComplete="new-username"
                   className="border-2 focus:border-[#CF9FFF] transition-colors"
                 />
                 <div className="text-xs text-gray-500">
@@ -324,6 +344,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 <Label htmlFor="signup-password">Password</Label>
                 <Input
                   id="signup-password"
+                  name="signup-password"
                   type="password"
                   placeholder="Create a password"
                   value={password}
@@ -340,12 +361,13 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 <Label htmlFor="signup-email">Email</Label>
                 <Input
                   id="signup-email"
+                  name="signup-email"
                   type="email"
                   placeholder="Enter your email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   required
-                  autoComplete="email"
+                  autoComplete="new-email"
                   className="border-2 focus:border-[#CF9FFF] transition-colors"
                 />
               </div>
@@ -353,10 +375,12 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 <Label htmlFor="signup-fullname">Full Name</Label>
                 <Input
                   id="signup-fullname"
+                  name="signup-fullname"
                   placeholder="Enter your full name"
                   value={fullName}
                   onChange={e => setFullName(e.target.value)}
                   required
+                  autoComplete="new-name"
                   className="border-2 focus:border-[#CF9FFF] transition-colors"
                 />
                 <div className="text-xs text-gray-500">
