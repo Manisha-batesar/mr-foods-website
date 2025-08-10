@@ -3,12 +3,11 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 interface UserState {
-  firstName: string;
-  lastName: string;
-  initials: string;
   username: string;
   password: string;
-  fullName?: string;
+  email: string;
+  fullName: string;
+  initials: string;
 }
 
 interface UserContextType {

@@ -39,6 +39,10 @@ export default function OrderNowPage() {
   const [totalBill, setTotalBill] = useState(0)
   const [showConfirmation, setShowConfirmation] = useState(false)
 
+  useEffect(() => {
+    setCustomerName(user?.fullName || '');
+  }, [user]);
+
   // Handle single dish selection via dishId parameter
   useEffect(() => {
     const dishId = searchParams.get('dishId')

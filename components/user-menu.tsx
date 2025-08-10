@@ -23,9 +23,23 @@ export function UserMenu() {
     setMounted(true)
   }, [])
 
-  // Generate initials from user's name
-  const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName[0]}${lastName[0]}`.toUpperCase()
+  // Generate initials from user's name or use stored initials
+  const getInitials = (user: any) => {
+    if (user?.initials) {
+      return user.initials;
+    }
+    // Fallback: generate from fullName if available
+    if (user?.fullName) {
+      const names = user.fullName.trim().split(/\s+/);
+      const firstInitial = names[0] ? names[0].charAt(0).toUpperCase() : '';
+      const lastInitial = names[names.length - 1] ? names[names.length - 1].charAt(0).toUpperCase() : '';
+      return `${firstInitial}${lastInitial}`;
+    }
+    // Final fallback: use username
+    if (user?.username) {
+      return user.username.charAt(0).toUpperCase();
+    }
+    return 'U';
   }
 
   const handleLogout = () => {
@@ -49,7 +63,7 @@ export function UserMenu() {
         <Button variant="ghost" size="icon" className="w-10 h-10 rounded-full p-0">
           <Avatar className="bg-background/50">
             <AvatarFallback className="bg-transparent">
-              {user ? getInitials(user.firstName, user.lastName) : <User className="h-4 w-4" />}
+              {user ? getInitials(user) : <User className="h-4 w-4" />}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -61,11 +75,11 @@ export function UserMenu() {
             <div className="flex items-center p-3">
               <Avatar className="h-8 w-8 mr-2 bg-background/50">
                 <AvatarFallback className="bg-transparent">
-                  {getInitials(user.firstName, user.lastName)}
+                  {getInitials(user)}
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
-                <span className="font-medium text-sm">{user.firstName} {user.lastName}</span>
+                <span className="font-medium text-sm">{user.fullName || user.username}</span>
                 <span className="text-xs text-gray-500">Member</span>
               </div>
             </div>
