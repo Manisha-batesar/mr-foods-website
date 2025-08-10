@@ -4,7 +4,7 @@ import React, { createContext, useContext, useReducer, ReactNode, useEffect, use
 import { CartItem } from './cart-context'
 import { useUser } from './user-context'
 
-export interface OrderItem extends CartItem {}
+export interface OrderItem extends CartItem { }
 
 export interface Order {
   id: string
@@ -13,8 +13,8 @@ export interface Order {
   total: number
   status: 'completed' | 'pending' | 'cancelled'
   orderTime?: number
-  username: string // associate order with user
-  customerName: string // display name of the user
+  username?: string // associate order with user
+  customerName?: string // display name of the user
 }
 
 interface OrdersState {
@@ -65,14 +65,14 @@ const loadOrdersState = (): OrdersState => {
   if (typeof window === 'undefined') {
     return { orders: [] }
   }
-  
+
   const savedState = localStorage.getItem('ordersState')
   if (savedState) {
     const parsedState = JSON.parse(savedState)
     console.log('OrdersContext: Loaded from localStorage:', parsedState);
     return parsedState
   }
-  
+
   console.log('OrdersContext: No saved state, returning empty orders');
   return { orders: [] }
 }
@@ -105,7 +105,10 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
   const addOrder = (order: Order) => {
     console.log('📦 OrdersContext: Adding order:', order);
     console.log('📦 OrdersContext: Current user:', user?.username);
-    dispatch({ type: 'ADD_ORDER', payload: order })
+    dispatch({
+      type: 'ADD_ORDER',
+      payload: { ...order, username: user?.username, customerName: user?.fullName }
+    })
   }
 
   const clearOrders = () => {
@@ -131,12 +134,12 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
   }, [state.orders])
 
   // Only filter orders if user context has loaded
-  const filteredOrders = isUserLoaded && user 
-    ? state.orders.filter(order => order.username === user.username) 
-    : isUserLoaded 
-    ? [] // No user logged in
-    : state.orders; // Still loading user context, show all orders temporarily
-  
+  const filteredOrders = isUserLoaded && user
+    ? state.orders.filter(order => order.username === user.username)
+    : isUserLoaded
+      ? [] // No user logged in
+      : state.orders; // Still loading user context, show all orders temporarily
+
   // Debug logging
   useEffect(() => {
     if (isUserLoaded) {
