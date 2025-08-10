@@ -2,18 +2,36 @@
 
 import { useState, useEffect } from 'react'
 import { Check, ShoppingCart, User, Hash, CheckCircle, X } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { ALL_FOOD_ITEMS } from '../../lib/foodData'
 import { useCart } from '@/components/cart-context'
 import { useOrders } from '@/components/orders-context'
 import { useUser } from '@/components/user-context'
+import { toast } from '@/hooks/use-toast'
 
 // Combined menu items from both food and drinks
 const allItems = ALL_FOOD_ITEMS
 
 export default function OrderNowPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { state: cartState, clearCart } = useCart();
+  const { user } = useUser();
+  const { addOrder } = useOrders();
+  
+  // Check if user is logged in on page load
+  useEffect(() => {
+    if (!user) {
+      toast({
+        title: "Please log in to place your order.",
+        description: "You need to be logged in to place an order.",
+        duration: 3000,
+        variant: "destructive"
+      })
+      router.push('/')
+      return
+    }
+  }, [user, router])
   
   const [customerName, setCustomerName] = useState('')
   const [numberOfPlates, setNumberOfPlates] = useState(1)
@@ -21,9 +39,18 @@ export default function OrderNowPage() {
   const [totalBill, setTotalBill] = useState(0)
   const [showConfirmation, setShowConfirmation] = useState(false)
 
-  // Initialize selected items and total from cart
+  // Handle single dish selection via dishId parameter
   useEffect(() => {
-    if (cartState.items.length > 0) {
+    const dishId = searchParams.get('dishId')
+    if (dishId) {
+      const dishIdNum = parseInt(dishId)
+      const dish = allItems.find(item => item.id === dishIdNum)
+      if (dish) {
+        setSelectedItems({ [dishIdNum]: true })
+        setTotalBill(dish.price)
+      }
+    } else if (cartState.items.length > 0) {
+      // Initialize from cart if no specific dish
       const cartSelections: {[key: number]: boolean} = {};
       cartState.items.forEach(item => {
         cartSelections[parseInt(item.id)] = true;
@@ -31,7 +58,7 @@ export default function OrderNowPage() {
       setSelectedItems(cartSelections);
       setTotalBill(cartState.total);
     }
-  }, [cartState.items, cartState.total]);
+  }, [searchParams, cartState.items, cartState.total])
 
   const handleItemToggle = (itemId: number) => {
     setSelectedItems(prev => ({
@@ -40,28 +67,54 @@ export default function OrderNowPage() {
     }))
   }
 
-  const { user } = useUser()
-  const { addOrder } = useOrders()
-
   const handleConfirmOrder = () => {
     const hasValidData = customerName.trim() && Object.values(selectedItems).some(selected => selected);
     if (hasValidData) {
-      // Create a new order from cart items
+      const searchParams = new URLSearchParams(window.location.search)
+      const dishId = searchParams.get('dishId')
+      
+      let orderItems, orderTotal;
+      
+      if (dishId) {
+        // Single dish order
+        const dishIdNum = parseInt(dishId)
+        const dish = allItems.find(item => item.id === dishIdNum)
+        if (dish) {
+          orderItems = [{
+            id: dish.id.toString(),
+            name: dish.name,
+            price: dish.price,
+            quantity: 1,
+            image: dish.image || '',
+            category: dish.category
+          }]
+          orderTotal = dish.price
+        }
+      } else {
+        // Cart order
+        orderItems = cartState.items
+        orderTotal = cartState.total
+      }
+      
+      // Create a new order
       const newOrder = {
         id: `ORD-${Date.now()}`,
         date: new Date().toISOString(),
-        items: cartState.items,
-        total: cartState.total,
-        status: 'completed' as const
+        items: orderItems || [],
+        total: orderTotal || 0,
+        status: 'pending' as const,
+        orderTime: Date.now()
       }
       
       // Add the order to order history
       addOrder(newOrder)
       
       setShowConfirmation(true)
-      // Clear the cart immediately after successful order
-      clearCart()
-      // Reset form after 15 seconds
+      // Clear the cart only if it was a cart order
+      if (!dishId) {
+        clearCart()
+      }
+      // Reset form after 3 seconds
       setTimeout(() => {
         setShowConfirmation(false)
         setCustomerName('')
@@ -248,15 +301,12 @@ export default function OrderNowPage() {
             <h3 className="text-xl font-bold mb-4" style={{ color: '#CF9FFF' }}>Order Summary</h3>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span>Number of Plates:</span>
-                <span className="font-semibold">
-                  As per item quantities
-                </span>
-              </div>
-              <div className="flex justify-between">
                 <span>Selected Items:</span>
                 <span className="font-semibold">
-                  {cartState.items.length}
+                  {(() => {
+                    const dishId = new URLSearchParams(window.location.search).get('dishId')
+                    return dishId ? 1 : cartState.items.length
+                  })()}
                 </span>
               </div>
               <div className="border-t border-purple-200 pt-2 mt-4">
@@ -334,7 +384,10 @@ export default function OrderNowPage() {
                 <div className="bg-gray-50 rounded-xl p-3 mb-4">
                   <p className="text-gray-600 text-xs mb-1">Order Summary:</p>
                   <p className="text-sm font-bold text-gray-800">
-                    {cartState.items.length} items from cart
+                    {(() => {
+                      const dishId = new URLSearchParams(window.location.search).get('dishId')
+                      return dishId ? '1 item ordered' : `${cartState.items.length} items from cart`
+                    })()}
                   </p>
                   <p className="text-lg font-bold text-purple-600">
                     Total: ₹{totalBill}

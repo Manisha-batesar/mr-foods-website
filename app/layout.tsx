@@ -7,6 +7,7 @@ import { CartProvider } from '@/components/cart-context'
 import { UserProvider } from '@/components/user-context'
 import { OrdersProvider } from '@/components/orders-context'
 import { CartSidebar } from '@/components/cart-sidebar'
+import { Toaster } from '@/components/ui/toaster'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -35,6 +36,7 @@ export default function RootLayout({
                 </main>
                 <Footer />
               </div>
+              <Toaster />
             </OrdersProvider>
           </UserProvider>
         </CartProvider>

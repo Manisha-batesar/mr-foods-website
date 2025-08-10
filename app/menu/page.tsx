@@ -7,13 +7,18 @@ import { ShoppingCart } from 'lucide-react'
 import { FOOD_CATEGORIES } from '../../lib/foodData'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/components/cart-context'
+import { useUser } from '@/components/user-context'
 import { toast } from '@/hooks/use-toast'
+import { useRouter } from 'next/navigation'
 
 const categories = FOOD_CATEGORIES
 
 export default function MenuPage() {
   const { addItem } = useCart();
+  const { user } = useUser();
+  const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState(categories[0])
+  
   const handleAddToCart = (product: any) => {
     addItem(product)
     toast({
@@ -21,6 +26,19 @@ export default function MenuPage() {
       description: `${product.name} has been added to your cart.`,
       duration: 2000,
     })
+  }
+
+  const handleOrderClick = (itemId: number) => {
+    if (!user) {
+      toast({
+        title: "Please log in to place your order.",
+        description: "You need to be logged in to place an order.",
+        duration: 3000,
+        variant: "destructive"
+      })
+      return
+    }
+    router.push(`/order-now?dishId=${itemId}`)
   }
   return (
     <div className="min-h-screen py-8">
@@ -93,14 +111,14 @@ export default function MenuPage() {
                     ₹{item.price}
                   </div>
                   <div className='flex gap-3 flex-col'>
-                  <Link
-                    href={`/order-now?dishId=${item.id}`}
+                  <button
+                    onClick={() => handleOrderClick(item.id)}
                     className="text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center space-x-2"
                     style={{ background: 'linear-gradient(135deg, #CF9FFF, #B87FFF)' }}
                   >
                     <ShoppingCart size={16} />
                     <span>Order Now</span>
-                  </Link>
+                  </button>
                    <Button
                   variant="default"
                   className="text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center space-x-2 w-full"

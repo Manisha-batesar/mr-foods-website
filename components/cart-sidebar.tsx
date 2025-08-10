@@ -1,15 +1,18 @@
 'use client';
 
 import { useCart } from "@/components/cart-context"
+import { useUser } from "@/components/user-context"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { toast } from '@/hooks/use-toast'
 
 export function CartSidebar() {
   const { state, removeItem, updateQuantity, clearCart, setCartOpen } = useCart()
+  const { user } = useUser()
   const router = useRouter()
 
   const handleQuantityChange = (id: string, newQuantity: number) => {
@@ -26,6 +29,15 @@ export function CartSidebar() {
   }
 
   const handleConfirmOrder = () => {
+    if (!user) {
+      toast({
+        title: "Please log in to place your order.",
+        description: "You need to be logged in to place an order.",
+        duration: 3000,
+        variant: "destructive"
+      })
+      return
+    }
     setCartOpen(false)
     router.push(`/order-now`)
     // Don't clear cart here - it will be cleared after successful order confirmation
