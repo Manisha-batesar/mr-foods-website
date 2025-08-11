@@ -11,14 +11,44 @@ import { Toaster } from '@/components/ui/toaster'
 
 const inter = Inter({ subsets: ['latin'] })
 
+const META_TITLE = 'MR Foods - Delicious Food Delivered';
+const META_DESCRIPTION = 'Experience the finest quality food with MR Foods - Your trusted partner for delicious meals';
+const META_IMAGE = '/images/preview-image.png';
+const META_URL = 'https://mrfoods.vercel.app'; // Update to your actual domain
+
 export const metadata: Metadata = {
-  title: 'MR Foods - Delicious Food Delivered',
-  description: 'Experience the finest quality food with MR Foods - Your trusted partner for delicious meals',
+  title: META_TITLE,
+  description: META_DESCRIPTION,
   icons: {
     icon: '/images/MR-logo.png',
     shortcut: '/images/MR-logo.png',
     apple: '/images/MR-logo.png',
   },
+  openGraph: {
+    title: META_TITLE,
+    description: META_DESCRIPTION,
+    url: META_URL,
+    siteName: META_TITLE,
+    images: [
+      {
+        url: META_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: META_TITLE,
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: META_TITLE,
+    description: META_DESCRIPTION,
+    images: [META_IMAGE],
+    site: '@mrfoods', // Update to your Twitter handle
+    creator: '@mrfoods', // Update to your Twitter handle
+  },
+  metadataBase: new URL(META_URL),
 }
 
 export default function RootLayout({
