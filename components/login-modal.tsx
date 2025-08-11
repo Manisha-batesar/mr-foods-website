@@ -23,24 +23,20 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const { setUser } = useUser()
   const { toast } = useToast();
 
-  // Clear all form fields (can be used on logout or login)
-  const clearAllInputs = () => {
+  // Reset all form fields
+  const resetForm = () => {
     setUsername('');
     setPassword('');
     setEmail('');
     setFullName('');
     setError('');
-    setMode('select');
-  }
+  };
 
-  // Reset form when switching modes
-  const resetForm = () => {
-    setUsername('')
-    setPassword('')
-    setEmail('')
-    setFullName('')
-    setError('')
-  }
+  // Clear all inputs and reset mode
+  const clearAllInputs = () => {
+    resetForm();
+    setMode('select');
+  };
 
   // Helper to get all users from localStorage
   const getAllUsers = () => {
@@ -58,7 +54,6 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
   // Validation functions
   const validateUsername = (username: string): boolean => {
-    // Remove spaces and check length
     const cleanUsername = username.replace(/\s/g, '');
     if (cleanUsername !== username) {
       setError('Username cannot contain spaces');
@@ -118,7 +113,6 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
       clearAllInputs();
       onClose()
     } else {
-      // Check if username exists but password is wrong
       const userExists = users.some((u: any) => u.username === username);
       if (userExists) {
         setError('Incorrect password for this username.');
@@ -154,7 +148,6 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     
     const users = getAllUsers();
     
-    // Check if username already exists
     if (users.some((u: any) => u.username === username)) {
       setError('Username already exists. Please choose a different one.');
       toast({ 
@@ -165,7 +158,6 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
       return;
     }
 
-    // Check if email already exists
     if (users.some((u: any) => u.email === email)) {
       setError('Email already registered. Please use a different email.');
       toast({ 
@@ -176,7 +168,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
       return;
     }
     
-    // Create initials from full name
+    // Generate initials from full name
     const names = fullName.trim().split(/\s+/);
     const firstInitial = names[0] ? names[0].charAt(0).toUpperCase() : '';
     const lastInitial = names[names.length - 1] ? names[names.length - 1].charAt(0).toUpperCase() : '';

@@ -69,11 +69,9 @@ const loadOrdersState = (): OrdersState => {
   const savedState = localStorage.getItem('ordersState')
   if (savedState) {
     const parsedState = JSON.parse(savedState)
-    console.log('OrdersContext: Loaded from localStorage:', parsedState);
     return parsedState
   }
 
-  console.log('OrdersContext: No saved state, returning empty orders');
   return { orders: [] }
 }
 
@@ -103,8 +101,6 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const addOrder = (order: Order) => {
-    console.log('📦 OrdersContext: Adding order:', order);
-    console.log('📦 OrdersContext: Current user:', user?.username);
     dispatch({
       type: 'ADD_ORDER',
       payload: { ...order, username: user?.username, customerName: user?.fullName }
@@ -139,14 +135,6 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
     : isUserLoaded
       ? [] // No user logged in
       : state.orders; // Still loading user context, show all orders temporarily
-
-  // Debug logging
-  useEffect(() => {
-    if (isUserLoaded) {
-      console.log('📦 OrdersContext: User loaded. Username:', user?.username, 'Total orders:', state.orders.length, 'Filtered orders:', filteredOrders.length);
-      console.log('📦 OrdersContext: All orders:', state.orders.map(o => ({ id: o.id, username: o.username, customerName: o.customerName })));
-    }
-  }, [isUserLoaded, user, state.orders, filteredOrders.length]);
 
   return (
     <OrdersContext.Provider value={{
