@@ -13,7 +13,12 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'MR Foods - Delicious Food Delivered',
-  description: 'Experience the finest quality food with MR Foods - Your trusted partner for delicious meals'
+  description: 'Experience the finest quality food with MR Foods - Your trusted partner for delicious meals',
+  icons: {
+    icon: '/images/MR-logo.png',
+    shortcut: '/images/MR-logo.png',
+    apple: '/images/MR-logo.png',
+  },
 }
 
 export default function RootLayout({
